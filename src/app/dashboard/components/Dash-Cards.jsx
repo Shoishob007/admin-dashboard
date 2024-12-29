@@ -13,11 +13,11 @@ const DashCards = () => {
   });
   return (
     <>
-      <Card className="w-full">
+      <Card className="w-full shadow-lg">
         <div className="flex justify-between items-center">
           <div>
             <CardHeader>
-              <CardTitle className="text-gray-600">Total Users</CardTitle>
+              <CardTitle className="text-gray-600 text-sm lg:text-base">Total Users</CardTitle>
               <CardDescription className="text-gray-600 text-2xl">
                 3,088
               </CardDescription>
@@ -27,11 +27,11 @@ const DashCards = () => {
         </div>
         <CardContent style={getStyle(2.5)}>+2.5%</CardContent>
       </Card>
-      <Card>
+      <Card className="w-full shadow-lg">
         <div className="flex justify-between items-center">
           <div>
             <CardHeader>
-              <CardTitle className="text-gray-600">Total Applicants</CardTitle>
+              <CardTitle className="text-gray-600 text-sm lg:text-base">Total Applicants</CardTitle>
               <CardDescription className="text-gray-600 text-2xl">
                 2,998
               </CardDescription>
@@ -41,11 +41,11 @@ const DashCards = () => {
         </div>
         <CardContent style={getStyle(0.5)}>+1.5%</CardContent>
       </Card>
-      <Card>
+      <Card className="w-full shadow-lg">
         <div className="flex justify-between items-center">
           <div>
             <CardHeader>
-              <CardTitle className="text-gray-600">
+              <CardTitle className="text-gray-600 text-sm lg:text-base">
                 Total Organizations
               </CardTitle>
               <CardDescription className="text-gray-600 text-2xl">
@@ -57,11 +57,11 @@ const DashCards = () => {
         </div>
         <CardContent style={getStyle(-1.2)}>-1.2%</CardContent>
       </Card>
-      <Card>
+      <Card className="w-full shadow-lg">
         <div className="flex justify-between items-center">
           <div>
             <CardHeader>
-              <CardTitle className="text-gray-600">New Members</CardTitle>
+              <CardTitle className="text-gray-600 text-sm lg:text-base">New Members</CardTitle>
               <CardDescription className="text-gray-600 text-2xl">
                 354
               </CardDescription>

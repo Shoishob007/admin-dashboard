@@ -1,5 +1,5 @@
 import React from "react";
-import { Bar, Doughnut, Line } from "react-chartjs-2";
+import { Bar, Doughnut, Line, Col } from "react-chartjs-2";
 
 export function DashBarChart() {
   const barChartData = {
@@ -68,19 +68,144 @@ export function DashLineChart() {
       {
         label: "Net Profit",
         data: [20, 40, 30, 60, 50, 70, 55, 90, 65, 98, 75, 95],
-        borderColor: "#F87171",
-        backgroundColor: "rgba(248, 113, 113, 0.3)",
+        borderColor: "#10b981",
+        backgroundColor: "rgba(4, 120, 87, 0.3)",
         fill: true,
       },
     ],
   };
 
+  const options = {
+    maintainAspectRatio: true,
+    aspectRatio: 2.5,
+    responsive: true,
+    plugins: {
+      legend: {
+        display: true,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+      },
+    },
+    drawActiveElementsOnTop: false
+  };
+
   return (
-    <>
+    <div style={{height:"50%"}}>
       <h2 className="text-lg font-semibold mb-2 text-gray-600 text-center">
         Net Profit
       </h2>
-      <Line data={lineChartData} style={{ height: "90%" }} />
-    </>
+      <Line data={lineChartData} options={options} />
+    </div>
+  );
+}
+
+export function DashColumnChart() {
+  const data = [
+    {
+      id: "m5gr84i9",
+      amount: 316,
+      status: "success",
+      name:"Ken",
+      email: "ken99@yahoo.com",
+    },
+    {
+      id: "3u1reuv4",
+      amount: 242,
+      status: "success",
+      name:"Abdul Halim",
+      email: "Abe45@gmail.com",
+    },
+    {
+      id: "derv1ws0",
+      amount: 837,
+      status: "processing",
+      name:"Monserrat",
+      email: "Monserrat44@gmail.com",
+    },
+    {
+      id: "5kma53ae",
+      amount: 874,
+      status: "success",
+      name:"Silas",
+      email: "Silas22@gmail.com",
+    },
+    {
+      id: "bhqecj4p",
+      amount: 721,
+      status: "failed",
+      name:"Carmella",
+      email: "carmella@hotmail.com",
+    },
+  ];
+
+  const columnChartData = {
+    labels: data.map((item) => item.name),
+    datasets: [
+      {
+        label: "Transaction Amount ($)",
+        data: data.map((item) => item.amount),
+        backgroundColor: data.map((item) => {
+          switch (item.status) {
+            case "success":
+              return "#4ADE80";
+            case "processing":
+              return "#FBBF24";
+            case "failed":
+              return "#F87171";
+            default:
+              return "#60A5FA";
+          }
+        }),
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    aspectRatio: 1.25,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            return `Amount: $${context.raw}`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          // text: "Users",
+        },
+        ticks: {
+          autoSkip: false,
+          maxRotation: 45,
+          minRotation: 45,
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: "Amount ($)",
+        },
+        beginAtZero: true,
+      },
+    },
+  };
+
+  return (
+    <div className="bg-white rounded-lg max-w-full px-4">
+      <h2 className="text-lg font-semibold mb-2 text-gray-600 text-center">
+        Transaction Amount by User
+      </h2>
+      <Bar data={columnChartData} options={options} />
+    </div>
   );
 }

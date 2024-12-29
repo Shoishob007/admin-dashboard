@@ -47,10 +47,18 @@ const VerticalNavbar = () => {
               </li>
               <li>
                 <Link
-                  href="/profile-settings"
+                  href="#"
                   className={cn("hover:underline")}
                 >
-                  Settings
+                  Applicants
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className={cn("hover:underline")}
+                >
+                  Organizations
                 </Link>
               </li>
               <li>

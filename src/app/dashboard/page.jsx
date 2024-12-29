@@ -25,6 +25,7 @@ import {
 import DashCards from "./components/Dash-Cards";
 import {
   DashBarChart,
+  DashColumnChart,
   DashDoughnutChart,
   DashLineChart,
 } from "./components/Dash-Charts";
@@ -72,28 +73,32 @@ export default function Dashboard() {
               </Breadcrumb>
             </header>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-4">
               <DashCards />
             </div>
 
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid items-center grid-cols-1 md:grid-cols-3">
+            <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid items-center gap-4 md:gap-0 grid-cols-1 md:grid-cols-3">
               <DashBarChart />
               <DashDoughnutChart />
             </div>
 
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-3">
-              <div className="bg-white p-6 rounded-lg h-fit">
-                <h2 className="text-lg font-semibold mb-2 text-gray-600 text-center">
-                  Sales by Countries
-                </h2>
-                <DashTable data={data} />
-              </div>
-              <div className="md:col-span-2">
+            <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid grid-cols-1">
+              <div className="h-fit">
                 <DashLineChart />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 mt-8"></div>
+            <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid grid-cols-1 sm:grid-cols-2">
+              <div className=" rounded-lg h-fit">
+                <h2 className="text-lg font-semibold mb-2 text-gray-600 text-center">
+                  Sales by Employees
+                </h2>
+                <DashTable data={data} />
+              </div>
+              <div className="h-fit">
+              <DashColumnChart />
+              </div>
+            </div>
           </div>
         </div>
       </SidebarProvider>
