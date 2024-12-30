@@ -37,7 +37,7 @@ export default function LoginForm() {
   };
 
   return (
-    <main className="flex justify-center items-center h-full">
+    <main className="flex justify-center items-center h-screen bg-gray-100">
       <Card className="mx-auto max-w-sm shadow-md">
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Sign In</CardTitle>

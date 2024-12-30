@@ -1,4 +1,4 @@
-// import { toast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { create } from "zustand";
 
 const useRegisterStore = create((set) => ({
@@ -58,14 +58,14 @@ const useRegisterStore = create((set) => ({
       }
 
       set({ submitted: true });
-      // toast({ title: "Registration Successful", variant: "ourSuccess" });
+      toast({ title: "Registration Successful", variant: "ourSuccess" });
     } catch (error) {
       console.error("Registration Failed:", error);
-      // toast({
-      //   title: "Registration Failed",
-      //   description: error.message,
-      //   variant: "ourDestructive",
-      // });
+      toast({
+        title: "Registration Failed",
+        description: error.message,
+        variant: "ourDestructive",
+      });
     }
   },
 }));
