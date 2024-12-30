@@ -5,6 +5,7 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
+  BriefcaseBusiness,
   Command,
   Frame,
   GalleryVerticalEnd,
@@ -53,7 +54,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/",
       icon: SquareTerminal,
       isActive: true,
       // items: [
@@ -73,18 +74,27 @@ const data = {
     },
     {
       title: "Users",
-      url: "#",
+      url: "/all",
       icon: Users,
       items: [
         {
+          title: "All Users",
+          url: "/all",
+        },
+        {
           title: "Applicants",
-          url: "#",
+          url: "/applicants",
         },
         {
           title: "Organizations",
-          url: "#",
+          url: "/organizations",
         },
       ],
+    },
+    {
+      title: "Jobs",
+      url: "/jobs",
+      icon: BriefcaseBusiness,
     },
     {
       title: "Info Center",
@@ -97,6 +107,10 @@ const data = {
         },
         {
           title: "Organization Info",
+          url: "#",
+        },
+        {
+          title: "Job Info",
           url: "#",
         },
         {

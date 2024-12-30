@@ -47,7 +47,7 @@ const VerticalNavbar = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/applicants"
                   className={cn("hover:underline")}
                 >
                   Applicants
@@ -55,10 +55,18 @@ const VerticalNavbar = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/organizations"
                   className={cn("hover:underline")}
                 >
                   Organizations
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/jobs"
+                  className={cn("hover:underline")}
+                >
+                  Jobs
                 </Link>
               </li>
               <li>
