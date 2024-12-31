@@ -74,12 +74,12 @@ const data = {
     },
     {
       title: "Users",
-      url: "/all",
+      url: "/all-users",
       icon: Users,
       items: [
         {
           title: "All Users",
-          url: "/all",
+          url: "/all-users",
         },
         {
           title: "Applicants",
@@ -137,7 +137,7 @@ const data = {
           url: "#",
         },
         {
-          title: "Billing",
+          title: "Job",
           url: "#",
         },
       ],

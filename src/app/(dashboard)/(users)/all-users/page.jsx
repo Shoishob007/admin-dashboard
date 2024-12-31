@@ -26,28 +26,24 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export default function AllApplicants() {
-  const [applicants, setApplicants] = useState([]);
+export default function AllUsers() {
+  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { data: session, status } = useSession();
 
-  const accessToken = session?.access_token;
-
   useEffect(() => {
-    const fetchApplicants = async () => {
+    const fetchUsers = async () => {
       if (status !== "authenticated" || !session?.access_token) {
         return;
       }
-
       try {
-        console.log(accessToken);
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/applicants?page=1&limit=50`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/users?page=1&limit=50`,
           {
             method: "GET",
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${session?.access_token}`,
               "Content-Type": "application/json",
             },
           }
@@ -58,16 +54,15 @@ export default function AllApplicants() {
         }
 
         const result = await response.json();
-        console.log(result.docs);
-        setApplicants(result.docs || []);
         setIsLoading(false);
+        setUsers(result.docs);
       } catch (err) {
         setError(err.message || "An unexpected error occurred.");
         setIsLoading(false);
       }
     };
 
-    fetchApplicants();
+    fetchUsers();
   }, [status, session?.access_token]);
 
   if (isLoading) {
@@ -80,14 +75,12 @@ export default function AllApplicants() {
     );
   }
 
-  if (!applicants || applicants.length === 0) {
-    return <div className="">No applicants available</div>;
+  if (!users || users.length === 0) {
+    return <div className="p-4">No users available</div>;
   }
 
   if (error) {
-    return (
-      <div className=" text-red-500">Error loading applicants: {error}</div>
-    );
+    return <div className="p-4 text-red-500">Error loading users: {error}</div>;
   }
 
   return (
@@ -96,36 +89,31 @@ export default function AllApplicants() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/applicants">All applicants</BreadcrumbLink>
+              <BreadcrumbLink href="/all-users">All users</BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </header>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 rounded-lg">
-        {applicants.map((applicant) => (
+        {users.map((user) => (
           <Card
-            key={applicant.id}
+            key={user.id}
             className="relative shadow-md hover:shadow-lg transition-shadow"
           >
             {/* Avatar and Name */}
-            <div className="flex bg-blue-100 rounded-t-lg items-center justify-between px-2 ">
+            <div className="flex bg-violet-100 rounded-t-lg items-center justify-between px-2">
               <CardHeader className="flex flex-row justify-start items-center space-x-2 py-3 px-0">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage
-                    src={applicant.applicant.pictureUrl || undefined}
-                    alt={applicant.name}
-                  />
+                  <AvatarImage src={user.pictureUrl || undefined} />
                   <AvatarFallback className="bg-white">
-                    {applicant.name?.[0]?.toUpperCase() || "U"}
+                    {user.name?.[0]?.toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <CardTitle className="text-sm font-medium">
-                    {applicant.firstName || "Unknown applicant"}
+                    {user.name || "Unknown user"}
                   </CardTitle>
-                  <p className="text-xs text-muted-foreground">
-                    {applicant.applicant.email}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
                 </div>
               </CardHeader>
               <div className="py-4">
@@ -152,17 +140,15 @@ export default function AllApplicants() {
             <CardContent className="mt-2 text-sm text-gray-700">
               <div className="flex gap-2">
                 <p className="font-semibold">Role:</p>
-                <p className="font-semibold">{applicant.role || "N/A"}</p>
+                <p className="font-semibold">{user.role || "N/A"}</p>
               </div>
               <div className="flex gap-2">
                 <p className="font-semibold">Status:</p>
-                <p className="font-semibold">{applicant.status || "Unknown"}</p>
+                <p className="font-semibold">{user.status || "Unknown"}</p>
               </div>
               <div className="flex gap-2">
                 <p className="font-semibold">Contact:</p>
-                <p className="font-semibold">
-                  {applicant.contactInfo || "N/A"}
-                </p>
+                <p className="font-semibold">{user.contactInfo || "N/A"}</p>
               </div>
             </CardContent>
 
@@ -171,7 +157,7 @@ export default function AllApplicants() {
               <Button
                 variant="outline"
                 size="sm"
-                className="p-2 hover:bg-blue-100 hover:border hover:border-blue-300"
+                className="p-2 hover:bg-violet-100 hover:border hover:border-violet-300"
               >
                 {/* <Edit className="h-4 w-4" /> */} Edit Details
               </Button>
@@ -180,7 +166,7 @@ export default function AllApplicants() {
                 size="sm"
                 className="p-2 hover:bg-red-100 hover:border hover:border-red-300"
               >
-                {/* <Trash className="h-4 w-4" /> */} Delete Applicant
+                {/* <Trash className="h-4 w-4" /> */} Delete User
               </Button>
             </CardFooter>
           </Card>

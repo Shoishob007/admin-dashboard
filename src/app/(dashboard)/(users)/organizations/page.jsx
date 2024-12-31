@@ -1,8 +1,30 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useSession } from 'next-auth/react';
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useSession } from "next-auth/react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Edit, Trash, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function AllOrganizations() {
   const [organizations, setOrganizations] = useState([]);
@@ -71,17 +93,94 @@ export default function AllOrganizations() {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">All Organizations</h1>
-      <div className="space-y-4">
+    <div className="">
+      <header className="flex h-16 items-center gap-2">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/organizations">All organizations</BreadcrumbLink>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </header>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 rounded-lg">
         {organizations.map((org) => (
-          <div
+          <Card
             key={org.id}
-            className="p-4 bg-white rounded-lg shadow hover:shadow-md transition-shadow"
+            className="relative shadow-md hover:shadow-lg transition-shadow"
           >
-            <h2 className="font-semibold">{org.orgName}</h2>
-            <p className="text-gray-600">{org.organization.email}</p>
-          </div>
+            {/* Avatar and Name */}
+            <div className="flex bg-emerald-100 rounded-t-lg items-center justify-between px-2">
+              <CardHeader className="flex flex-row justify-start items-center space-x-2 py-3 px-0">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={org.organization.pictureUrl || undefined}
+                    alt={org.orgName} />
+                  
+                  <AvatarFallback className="bg-white">
+                    {org.orgName?.[0]?.toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <CardTitle className="text-sm font-medium">
+                    {org.orgName || "Unknown user"}
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground">{org.organization.email}</p>
+                </div>
+              </CardHeader>
+              <div className="py-4">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200"
+                      >
+                        <Info className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>View Details</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </div>
+
+            {/* Card Content */}
+            <CardContent className="mt-2 text-sm text-gray-700">
+              <div className="flex gap-2">
+                <p className="font-semibold">Established:</p>
+                <p className="font-semibold">{org.orgEstablishedYear || "N/A"}</p>
+              </div>
+              <div className="flex gap-2">
+                <p className="font-semibold">Phone:</p>
+                <p className="font-semibold">{org.orgPhone || "Unknown"}</p>
+              </div>
+              <div className="flex gap-2">
+                <p className="font-semibold">Address:</p>
+                <p className="font-semibold">{org.orgAddress || "N/A"}</p>
+              </div>
+            </CardContent>
+
+            {/* Actions */}
+            <CardFooter className="flex justify-between items-center text-gray-700 px-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="p-2 hover:bg-emerald-100 hover:border hover:border-emerald-300"
+              >
+                {/* <Edit className="h-4 w-4" /> */} Edit Details
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="p-2 hover:bg-red-100 hover:border hover:border-red-300"
+              >
+                {/* <Trash className="h-4 w-4" /> */} Delete Organization
+              </Button>
+            </CardFooter>
+          </Card>
         ))}
       </div>
     </div>

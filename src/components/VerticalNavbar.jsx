@@ -23,6 +23,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
+import { Separator } from "@/components/ui/separator";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 const VerticalNavbar = () => {
   // const handleSearch = (query) => {
@@ -31,13 +33,19 @@ const VerticalNavbar = () => {
 
   return (
     <nav
-      className={`bg-white dark:bg-gray-800 py-6 px-2 sm:px-6 rounded-lg text-gray-600 dark:text-gray-200 shadow-md border-t-2 text-sm flex items-center justify-between`}
+      className={`bg-white dark:bg-gray-800 py-6 px-2 mx-2 mt-2 sm:px-6 rounded-lg text-gray-600 dark:text-gray-200 shadow-md text-sm flex items-center justify-between`}
     >
       <div
         className={`flex flex-col space-y-2 transition-all duration-300 ease-in-out`}
       >
         <ul className="flex space-x-4 items-center">
-          <li className="items-center text-center"></li>
+          <div className="flex">
+            <li className="items-center text-center">
+              {" "}
+              <SidebarTrigger />
+              {/* <Separator orientation="vertical" className="mr-2 h-4" /> */}
+            </li>
+          </div>
           {
             <>
               <li>
@@ -46,34 +54,25 @@ const VerticalNavbar = () => {
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/applicants"
-                  className={cn("hover:underline")}
-                >
+                <Link href="/applicants" className={cn("hover:underline")}>
                   Applicants
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/organizations"
-                  className={cn("hover:underline")}
-                >
+                <Link href="/organizations" className={cn("hover:underline")}>
                   Organizations
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/jobs"
-                  className={cn("hover:underline")}
-                >
+                <Link href="/jobs" className={cn("hover:underline")}>
                   Jobs
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="#" className={cn("hover:underline")}>
                   Contact Us
                 </Link>
-              </li>
+              </li> */}
             </>
           }
         </ul>

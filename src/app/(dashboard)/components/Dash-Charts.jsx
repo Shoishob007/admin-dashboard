@@ -1,4 +1,5 @@
-import React from "react";
+import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
 import { Bar, Doughnut, Line, Col } from "react-chartjs-2";
 
 export function DashBarChart() {
@@ -89,11 +90,11 @@ export function DashLineChart() {
         beginAtZero: true,
       },
     },
-    drawActiveElementsOnTop: false
+    drawActiveElementsOnTop: false,
   };
 
   return (
-    <div style={{height:"50%"}}>
+    <div style={{ height: "50%" }}>
       <h2 className="text-lg font-semibold mb-2 text-gray-600 text-center">
         Net Profit
       </h2>
@@ -108,46 +109,54 @@ export function DashColumnChart() {
       id: "m5gr84i9",
       amount: 316,
       status: "success",
-      name:"Ken",
+      name: "Ken",
       email: "ken99@yahoo.com",
     },
     {
       id: "3u1reuv4",
       amount: 242,
       status: "success",
-      name:"Abdul Halim",
+      name: "Abdul Halim",
       email: "Abe45@gmail.com",
     },
     {
       id: "derv1ws0",
       amount: 837,
       status: "processing",
-      name:"Monserrat",
+      name: "Monserrat",
       email: "Monserrat44@gmail.com",
     },
     {
       id: "5kma53ae",
       amount: 874,
       status: "success",
-      name:"Silas",
+      name: "Silas",
       email: "Silas22@gmail.com",
     },
     {
       id: "bhqecj4p",
       amount: 721,
       status: "failed",
-      name:"Carmella",
+      name: "Carmella",
       email: "carmella@hotmail.com",
     },
   ];
 
+  const [selectedCategories, setSelectedCategories] = useState({
+    success: true,
+    processing: true,
+    failed: true,
+  });
+
+  const filteredData = data.filter((item) => selectedCategories[item.status]);
+
   const columnChartData = {
-    labels: data.map((item) => item.name),
+    labels: filteredData.map((item) => item.name),
     datasets: [
       {
         label: "Transaction Amount ($)",
-        data: data.map((item) => item.amount),
-        backgroundColor: data.map((item) => {
+        data: filteredData.map((item) => item.amount),
+        backgroundColor: filteredData.map((item) => {
           switch (item.status) {
             case "success":
               return "#4ADE80";
@@ -167,44 +176,68 @@ export function DashColumnChart() {
     responsive: true,
     aspectRatio: 1.25,
     plugins: {
-      legend: {
-        display: false,
-      },
+      legend: { display: false },
       tooltip: {
         callbacks: {
-          label: (context) => {
-            return `Amount: $${context.raw}`;
-          },
+          label: (context) => `Amount: $${context.raw}`,
         },
       },
     },
     scales: {
       x: {
-        title: {
-          display: true,
-          // text: "Users",
-        },
-        ticks: {
-          autoSkip: false,
-          maxRotation: 45,
-          minRotation: 45,
-        },
+        title: { display: true },
+        ticks: { autoSkip: false, maxRotation: 45, minRotation: 45 },
       },
       y: {
-        title: {
-          display: true,
-          text: "Amount ($)",
-        },
+        title: { display: true, text: "Amount ($)" },
         beginAtZero: true,
       },
     },
   };
 
+  const handleCategoryToggle = (category) => {
+    setSelectedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
+
   return (
     <div className="bg-white rounded-lg max-w-full px-4">
-      <h2 className="text-lg font-semibold mb-2 text-gray-600 text-center">
+      <h2 className="text-lg font-semibold mb-4 text-gray-600 text-center">
         Transaction Amount by User
       </h2>
+
+      {/* Category Filters */}
+      <div className="flex justify-center space-x-2 mb-4">
+        {["success", "processing", "failed"].map((category) => (
+          <Button
+            key={category}
+            onClick={() => handleCategoryToggle(category)}
+            variant="outline"
+            className={`flex items-center space-x-1 px-2 py-1 border-none hover:bg-transparent shadow-none ${
+              selectedCategories[category]
+                ? "text-gray-700"
+                : "text-gray-400 line-through"
+            }`}
+          >
+            <div
+              className={`w-8 h-3 bg-gray-200 border-[3px] ${
+                category === "success"
+                  ? "border-emerald-500"
+                  : category === "processing"
+                  ? "border-yellow-400"
+                  : "border-red-500"
+              } border-2`}
+            ></div>
+            <span className="text-xs capitalize text-gray-500">
+              {category.charAt(0).toUpperCase() + category.slice(1)}
+            </span>
+          </Button>
+        ))}
+      </div>
+
+      {/* Chart */}
       <Bar data={columnChartData} options={options} />
     </div>
   );
