@@ -224,10 +224,10 @@ export function DashColumnChart() {
             <div
               className={`w-8 h-3 bg-gray-200 border-[3px] ${
                 category === "success"
-                  ? "border-emerald-500"
+                  ? "border-green-400"
                   : category === "processing"
                   ? "border-yellow-400"
-                  : "border-red-500"
+                  : "border-rose-400"
               } border-2`}
             ></div>
             <span className="text-xs capitalize text-gray-500">
