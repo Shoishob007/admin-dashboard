@@ -97,27 +97,9 @@ const data = {
       icon: BriefcaseBusiness,
     },
     {
-      title: "Info Center",
-      url: "#",
+      title: "Global Entities",
+      url: "/global-setup",
       icon: Info,
-      items: [
-        {
-          title: "Applicant Info",
-          url: "#",
-        },
-        {
-          title: "Organization Info",
-          url: "#",
-        },
-        {
-          title: "Job Info",
-          url: "#",
-        },
-        {
-          title: "Others",
-          url: "#",
-        },
-      ],
     },
     {
       title: "Settings",

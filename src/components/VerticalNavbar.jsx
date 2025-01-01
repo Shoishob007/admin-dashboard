@@ -33,7 +33,7 @@ const VerticalNavbar = () => {
 
   return (
     <nav
-      className={`bg-white dark:bg-gray-800 py-6 px-2 mx-2 mt-2 sm:px-6 rounded-lg text-gray-600 dark:text-gray-200 shadow-md text-sm flex items-center justify-between`}
+      className={`bg-white dark:bg-gray-800 py-6 px-2 mx-4 mt-2 sm:px-6 rounded-lg text-gray-600 dark:text-gray-200 shadow-md text-sm flex items-center justify-between`}
     >
       <div
         className={`flex flex-col space-y-2 transition-all duration-300 ease-in-out`}
