@@ -238,14 +238,14 @@ export default function AllJobs() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="p-2 hover:bg-orange-100 hover:border hover:border-orange-300"
+                  className="p-2 hover:bg-orange-100 border border-orange-300"
                 >
                   Edit Details
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="p-2 hover:bg-red-100 hover:border hover:border-red-300"
+                  className="p-2 hover:bg-red-100 border border-red-300"
                 >
                   Delete Job
                 </Button>

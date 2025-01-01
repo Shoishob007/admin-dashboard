@@ -26,7 +26,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { filterApplicants, filterJobs } from "@/lib/filters";
-import { JobFilters } from "@/components/filters/JobFilters";
+import { AppFilters, JobFilters } from "@/components/filters/JobFilters";
 import OurPagination from "@/components/Pagination";
 
 export default function AllApplicants() {
@@ -145,7 +145,7 @@ export default function AllApplicants() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col ">
+      <div className="flex flex-col">
         <header className="flex h-16 items-center gap-2">
           <Breadcrumb>
             <BreadcrumbList>
@@ -157,7 +157,7 @@ export default function AllApplicants() {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <JobFilters
+        <AppFilters
           jobs={applicants}
           filters={filters}
           onFilterChange={handleFilterChange}
@@ -239,14 +239,14 @@ export default function AllApplicants() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="p-2 hover:bg-blue-100 hover:border hover:border-blue-300"
+                  className="p-2 hover:bg-blue-100 border border-blue-300"
                 >
                   {/* <Edit className="h-4 w-4" /> */} Edit Details
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="p-2 hover:bg-red-100 hover:border hover:border-red-300"
+                  className="p-2 hover:bg-red-100 border border-red-300"
                 >
                   {/* <Trash className="h-4 w-4" /> */} Delete Applicant
                 </Button>

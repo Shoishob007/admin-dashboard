@@ -25,14 +25,33 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { filterOrganizations } from "@/lib/filters";
+import { OrgFilters } from "@/components/filters/JobFilters";
+import OurPagination from "@/components/Pagination";
 
 export default function AllOrganizations() {
   const [organizations, setOrganizations] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { data: session, status } = useSession();
-
   const accessToken = session?.access_token;
+  const [filters, setFilters] = useState({
+    searchQuery: "",
+    sortBy: "latest",
+  });
+  const itemsPerPage = 16;
+  const [currentPaginationPage, setCurrentPaginationPage] = useState(1);
+
+  const handleFilterChange = (filterName, value) => {
+    setFilters((prev) => ({ ...prev, [filterName]: value }));
+  };
+
+  const handleReset = () => {
+    setFilters({
+      searchQuery: "",
+      sortBy: "latest",
+    });
+  };
 
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -41,20 +60,22 @@ export default function AllOrganizations() {
       }
 
       try {
-        console.log(accessToken)
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/organizations?page=1&limit=1000`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        });
-        
-  
+        console.log(accessToken);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/organizations?page=1&limit=50`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
         if (!response.ok) {
           throw new Error(`Error: ${response.status} - ${response.statusText}`);
         }
-  
+
         const result = await response.json();
         console.log(result.docs);
         setOrganizations(result.docs || []);
@@ -64,15 +85,30 @@ export default function AllOrganizations() {
         setIsLoading(false);
       }
     };
-  
+
     fetchOrganizations();
   }, [status, session?.access_token]);
-  
+
+  const filteredOrganizations = filterOrganizations(organizations, filters);
+  // Sorting organizations based on creation date
+  const sortedOrganizations = [...filteredOrganizations].sort((a, b) => {
+    const dateA = new Date(a.createdAt).getTime();
+    const dateB = new Date(b.createdAt).getTime();
+    return filters.sortBy === "latest" ? dateB - dateA : dateA - dateB;
+  });
+
+  const totalPages = Math.ceil(filteredOrganizations.length / itemsPerPage);
+  // Slicing organizations for current page
+  const startIndex = (currentPaginationPage - 1) * itemsPerPage;
+  const currentOrganizations = sortedOrganizations.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   if (isLoading) {
     return (
       <div className="space-y-4 p-4">
-        {[...Array(5)].map((_, i) => (
+        {[...Array(8)].map((_, i) => (
           <Skeleton key={i} className="h-16 w-full" />
         ))}
       </div>
@@ -80,9 +116,8 @@ export default function AllOrganizations() {
   }
 
   if (!organizations || organizations.length === 0) {
-  return <div>No organizations available</div>;
-}
-
+    return <div>No organizations available</div>;
+  }
 
   if (error) {
     return (
@@ -93,96 +128,126 @@ export default function AllOrganizations() {
   }
 
   return (
-    <div className="">
-      <header className="flex h-16 items-center gap-2">
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/organizations">All organizations</BreadcrumbLink>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </header>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 rounded-lg">
-        {organizations.map((org) => (
-          <Card
-            key={org.id}
-            className="relative shadow-md hover:shadow-lg transition-shadow"
-          >
-            {/* Avatar and Name */}
-            <div className="flex bg-emerald-100 rounded-t-lg items-center justify-between px-2">
-              <CardHeader className="flex flex-row justify-start items-center space-x-2 py-3 px-0">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={org.organization.pictureUrl || undefined}
-                    alt={org.orgName} />
-                  
-                  <AvatarFallback className="bg-white">
-                    {org.orgName?.[0]?.toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-sm font-medium">
-                    {org.orgName || "Unknown user"}
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground">{org.organization.email}</p>
-                </div>
-              </CardHeader>
-              <div className="py-4">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200"
-                      >
-                        <Info className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>View Details</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
-            </div>
-
-            {/* Card Content */}
-            <CardContent className="mt-2 text-sm text-gray-700">
-              <div className="flex gap-2">
-                <p className="font-semibold">Established:</p>
-                <p className="font-semibold">{org.orgEstablishedYear || "N/A"}</p>
-              </div>
-              <div className="flex gap-2">
-                <p className="font-semibold">Phone:</p>
-                <p className="font-semibold">{org.orgPhone || "Unknown"}</p>
-              </div>
-              <div className="flex gap-2">
-                <p className="font-semibold">Address:</p>
-                <p className="font-semibold">{org.orgAddress || "N/A"}</p>
-              </div>
-            </CardContent>
-
-            {/* Actions */}
-            <CardFooter className="flex justify-between items-center text-gray-700 px-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="p-2 hover:bg-emerald-100 hover:border hover:border-emerald-300"
-              >
-                {/* <Edit className="h-4 w-4" /> */} Edit Details
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="p-2 hover:bg-red-100 hover:border hover:border-red-300"
-              >
-                {/* <Trash className="h-4 w-4" /> */} Delete Organization
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
+    <div className="space-y-4">
+      <div className="flex flex-col ">
+        <header className="flex h-16 items-center gap-2">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/organizations">
+                  All organizations
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </header>
+        <OrgFilters
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onReset={handleReset}
+        />
       </div>
+
+      {currentOrganizations.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 rounded-lg">
+          {currentOrganizations.map((org) => (
+            <Card
+              key={org.id}
+              className="relative shadow-md hover:shadow-lg transition-shadow"
+            >
+              {/* Avatar and Name */}
+              <div className="flex bg-emerald-100 rounded-t-lg items-center justify-between px-2">
+                <CardHeader className="flex flex-row justify-start items-center space-x-2 py-3 px-0">
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage
+                      src={org.organization.pictureUrl || undefined}
+                      alt={org.orgName}
+                    />
+
+                    <AvatarFallback className="bg-white">
+                      {org.orgName?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <CardTitle className="text-sm font-medium">
+                      {org.orgName || "Unknown organization"}
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      {org.organization.email}
+                    </p>
+                  </div>
+                </CardHeader>
+                <div className="py-4">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200"
+                        >
+                          <Info className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>View Details</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              </div>
+
+              {/* Card Content */}
+              <CardContent className="mt-2 text-sm text-gray-700">
+                <div className="flex gap-2">
+                  <p className="font-semibold">Established:</p>
+                  <p className="font-semibold">
+                    {org.orgEstablishedYear || "N/A"}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <p className="font-semibold">Phone:</p>
+                  <p className="font-semibold">{org.orgPhone || "Unknown"}</p>
+                </div>
+                <div className="flex gap-2">
+                  <p className="font-semibold">Address:</p>
+                  <p className="font-semibold">{org.orgAddress || "N/A"}</p>
+                </div>
+              </CardContent>
+
+              {/* Actions */}
+              <CardFooter className="flex justify-between items-center text-gray-700 px-3 ">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="p-2 hover:bg-emerald-100 border border-emerald-300"
+                >
+                  {/* <Edit className="h-4 w-4" /> */} Edit Details
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="p-2 hover:bg-red-100 border border-red-300"
+                >
+                  {/* <Trash className="h-4 w-4" /> */} Delete Organization
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center text-gray-500">
+          No organization match your filters.
+        </div>
+      )}
+
+      {currentOrganizations.length > 0 && (
+        <OurPagination
+          totalPages={totalPages}
+          currentPage={currentPaginationPage}
+          onPageChange={(page) => setCurrentPaginationPage(page)}
+        />
+      )}
     </div>
   );
 }

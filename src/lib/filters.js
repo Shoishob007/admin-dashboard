@@ -12,11 +12,22 @@ export const matchesSearchQuery = (searchQuery, job) => {
     );
 };
 
-export const matchesUsersSearchQuery = (searchQuery, job) => {
+export const matchesUsersSearchQuery = (searchQuery, user) => {
     const searchLower = searchQuery.toLowerCase();
     return (
-        job?.role.toLowerCase().includes(searchLower) ||
-        job?.email.toLowerCase().includes(searchLower)
+        user?.role.toLowerCase().includes(searchLower) ||
+        user?.email.toLowerCase().includes(searchLower)
+    );
+};
+
+export const matchesOrganizationsSearchQuery = (searchQuery, org) => {
+    const searchLower = searchQuery.toLowerCase();
+    return (
+        org?.orgName?.toLowerCase().includes(searchLower) ||
+        org?.orgAddress?.toLowerCase().includes(searchLower) ||
+        org?.orgPhone?.toLowerCase().includes(searchLower) ||
+        org?.orgEstablishedYear?.toLowerCase().includes(searchLower) ||
+        org?.organization?.email?.toLowerCase().includes(searchLower)
     );
 };
 
@@ -79,6 +90,19 @@ export const filterUsers = (jobs, filters) => {
     });
 };
 
+export const filterOrganizations = (orgs, filters) => {
+    if (!orgs) return [];
+
+    return orgs.filter((org) => {
+        // Search query filter
+        if (filters.searchQuery && !matchesOrganizationsSearchQuery(filters.searchQuery, org)) {
+            return false;
+        }
+
+        return true;
+    });
+};
+
 export const filterApplicants = (applicants, filters) => {
     if (!applicants) return [];
 
@@ -89,7 +113,7 @@ export const filterApplicants = (applicants, filters) => {
         }
 
         // Job role filter
-        if (filters.jobRole !== 'all' && job.jobRole?.[0]?.title !== filters.jobRole) {
+        if (filters.jobRole !== 'all' && applicant?.jobRole?.[0]?.title !== filters.jobRole) {
             return false;
         }
 

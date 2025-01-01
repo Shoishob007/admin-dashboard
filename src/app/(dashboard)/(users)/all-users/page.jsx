@@ -132,7 +132,6 @@ export default function AllUsers() {
           </Breadcrumb>
         </header>
         <UserFilters
-          jobs={users}
           filters={filters}
           onFilterChange={handleFilterChange}
           onReset={handleReset}
@@ -204,14 +203,14 @@ export default function AllUsers() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="p-2 hover:bg-violet-100 hover:border hover:border-violet-300"
+                  className="p-2 hover:bg-violet-100 border border-violet-300"
                 >
                   {/* <Edit className="h-4 w-4" /> */} Edit Details
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="p-2 hover:bg-red-100 hover:border hover:border-red-300"
+                  className="p-2 hover:bg-red-100 border border-red-300"
                 >
                   {/* <Trash className="h-4 w-4" /> */} Delete User
                 </Button>
