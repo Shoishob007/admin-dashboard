@@ -1,3 +1,5 @@
+'use client'
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -7,8 +9,51 @@ import {
 
 import MySkills from "../mySkills/page.jsx";
 import AddSkills from "../addSkills/page.jsx";
+import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react";
 
 const SkillTabs = () => {
+  const [skills, setSkills] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { data: session, status } = useSession();
+  const accessToken = session?.access_token;
+
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      if (status !== "authenticated" || !session?.access_token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/skills`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        setSkills(result.docs || []);
+        setIsLoading(false);
+      } catch (err) {
+        setError(err.message || "An unexpected error occurred.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchSkills();
+  }, [status, session?.access_token]);
+
   return (
     <Tabs defaultValue="mySkills">
       <ScrollArea>
@@ -35,10 +80,10 @@ const SkillTabs = () => {
       </ScrollArea>
 
       <TabsContent value="mySkills">
-        <MySkills />
+        <MySkills skills={skills} isLoading={isLoading} error={error}/>
       </TabsContent>
       <TabsContent value="addSkills">
-        <AddSkills />
+        <AddSkills skills={skills} accessToken={accessToken}/>
       </TabsContent>
     </Tabs>
   );

@@ -1,3 +1,5 @@
+"use client"
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -7,8 +9,51 @@ import {
 
 import MyFieldOfStudy from "../myFieldOfStudy/page.jsx";
 import AddFieldOfStudy from "../addFieldOfStudy/page.jsx";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 const FieldOfStudyTabs = () => {
+  const [fieldOfStudy, setFieldOfStudy] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { data: session, status } = useSession();
+  const accessToken = session?.access_token;
+
+  useEffect(() => {
+    const fetchFieldOfStudy = async () => {
+      if (status !== "authenticated" || !session?.access_token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/field-of-studies`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        setFieldOfStudy(result.docs || []);
+        setIsLoading(false);
+      } catch (err) {
+        setError(err.message || "An unexpected error occurred.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchFieldOfStudy();
+  }, [status, session?.access_token]);
+
+
   return (
     <Tabs defaultValue="myFieldOfStudy">
       <ScrollArea>
@@ -35,10 +80,10 @@ const FieldOfStudyTabs = () => {
       </ScrollArea>
 
       <TabsContent value="myFieldOfStudy">
-        <MyFieldOfStudy />
+        <MyFieldOfStudy fieldOfStudy={fieldOfStudy} isLoading={isLoading} error={error} />
       </TabsContent>
       <TabsContent value="addFieldOfStudy">
-        <AddFieldOfStudy />
+        <AddFieldOfStudy fieldOfStudy={fieldOfStudy} accessToken={accessToken} />
       </TabsContent>
     </Tabs>
   );

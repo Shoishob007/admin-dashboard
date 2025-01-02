@@ -1,3 +1,4 @@
+"use client"
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -7,8 +8,50 @@ import {
 
 import MyEmployeeTypes from "../myEmployeeTypes/page.jsx";
 import AddEmployeeTypes from "../addEmployeeTypes/page.jsx";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 const EmployeeTypeTabs = () => {
+  const [employeeTypes, setEmployeeTypes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { data: session, status } = useSession();
+  const accessToken = session?.access_token;
+
+  useEffect(() => {
+    const fetchEmployeeTypes = async () => {
+      if (status !== "authenticated" || !session?.access_token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/employee-types`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        setEmployeeTypes(result.docs || []);
+        setIsLoading(false);
+      } catch (err) {
+        setError(err.message || "An unexpected error occurred.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmployeeTypes();
+  }, [status, session?.access_token]);
+
   return (
     <Tabs defaultValue="myEmployeeTypes">
       <ScrollArea>
@@ -35,10 +78,10 @@ const EmployeeTypeTabs = () => {
       </ScrollArea>
 
       <TabsContent value="myEmployeeTypes">
-        <MyEmployeeTypes />
+        <MyEmployeeTypes employeeTypes={employeeTypes} isLoading={isLoading} error={error} />
       </TabsContent>
       <TabsContent value="addEmployeeTypes">
-        <AddEmployeeTypes />
+        <AddEmployeeTypes employeeTypes={employeeTypes} accessToken={accessToken} />
       </TabsContent>
     </Tabs>
   );

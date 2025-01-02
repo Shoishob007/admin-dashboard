@@ -1,3 +1,4 @@
+"use client"
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -7,8 +8,50 @@ import {
 
 import MySocialMedia from "../mySocialMedia/page.jsx";
 import AddSocialMedia from "../addSocialMedia/page.jsx";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 const SocialMediaTabs = () => {
+  const [socialMedia, setSocialMedia] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { data: session, status } = useSession();
+  const accessToken = session?.access_token;
+
+  useEffect(() => {
+    const fetchSocialMedia = async () => {
+      if (status !== "authenticated" || !session?.access_token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/social-medias`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        setSocialMedia(result.docs || []);
+        setIsLoading(false);
+      } catch (err) {
+        setError(err.message || "An unexpected error occurred.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchSocialMedia();
+  }, [status, session?.access_token]);
+
   return (
     <Tabs defaultValue="mySocialMedia">
       <ScrollArea>
@@ -35,10 +78,10 @@ const SocialMediaTabs = () => {
       </ScrollArea>
 
       <TabsContent value="mySocialMedia">
-        <MySocialMedia />
+        <MySocialMedia socialMedia={socialMedia} isLoading={isLoading} error={error} />
       </TabsContent>
       <TabsContent value="addSocialMedia">
-        <AddSocialMedia />
+        <AddSocialMedia socialMedia={socialMedia} accessToken={accessToken} />
       </TabsContent>
     </Tabs>
   );

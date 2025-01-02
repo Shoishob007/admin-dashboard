@@ -1,3 +1,4 @@
+"use client"
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -7,8 +8,50 @@ import {
 
 import MyJobTypes from "../MyJobTypes/page.jsx";
 import AddJobType from "../addJobType/page.jsx";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 const JobTypeTabs = () => {
+  const [jobTypes, setJobTypes] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { data: session, status } = useSession();
+  const accessToken = session?.access_token;
+
+  useEffect(() => {
+    const fetchJobTypes = async () => {
+      if (status !== "authenticated" || !session?.access_token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/job-types`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        setJobTypes(result.docs || []);
+        setIsLoading(false);
+      } catch (err) {
+        setError(err.message || "An unexpected error occurred.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchJobTypes();
+  }, [status, session?.access_token]);
+
   return (
     <Tabs defaultValue="myJobType">
       <ScrollArea>
@@ -35,10 +78,10 @@ const JobTypeTabs = () => {
       </ScrollArea>
 
       <TabsContent value="myJobType">
-        <MyJobTypes />
+        <MyJobTypes jobTypes={jobTypes} isLoading={isLoading} error={error} />
       </TabsContent>
       <TabsContent value="addJobType">
-        <AddJobType />
+        <AddJobType jobTypes={jobTypes} accessToken={accessToken}/>
       </TabsContent>
     </Tabs>
   );

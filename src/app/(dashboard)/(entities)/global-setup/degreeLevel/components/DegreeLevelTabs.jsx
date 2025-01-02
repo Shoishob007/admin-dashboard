@@ -1,3 +1,4 @@
+"use client"
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -7,8 +8,49 @@ import {
 
 import MyDegreeLevels from "../myDegreeLevels/page.jsx";
 import AddDegreeLevels from "../addDegreeLevels/page.jsx";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 const DegreeLevelTabs = () => {
+  const [degreeLevels, setDegreeLevels] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { data: session, status } = useSession();
+  const accessToken = session?.access_token;
+
+  useEffect(() => {
+    const fetchDegreeLevels = async () => {
+      if (status !== "authenticated" || !session?.access_token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        setDegreeLevels(result.docs || []);
+        setIsLoading(false);
+      } catch (err) {
+        setError(err.message || "An unexpected error occurred.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchDegreeLevels();
+  }, [status, session?.access_token]);
   return (
     <Tabs defaultValue="myDegreeLevels">
       <ScrollArea>
@@ -35,10 +77,10 @@ const DegreeLevelTabs = () => {
       </ScrollArea>
 
       <TabsContent value="myDegreeLevels">
-        <MyDegreeLevels />
+        <MyDegreeLevels degreeLevels={degreeLevels} isLoading={isLoading} error={error} />
       </TabsContent>
       <TabsContent value="addDegreeLevels">
-        <AddDegreeLevels />
+        <AddDegreeLevels degreeLevels={degreeLevels} accessToken={accessToken} />
       </TabsContent>
     </Tabs>
   );

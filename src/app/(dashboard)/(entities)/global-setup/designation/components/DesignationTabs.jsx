@@ -1,3 +1,4 @@
+"use client"
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -7,8 +8,50 @@ import {
 
 import MyJobDesignation from "../myJobDesignation/page.jsx";
 import AddJobDesignation from "../addJobDesignation/page.jsx";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 const DesignationTabs = () => {
+  const [designations, setDesignations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { data: session, status } = useSession();
+  const accessToken = session?.access_token;
+
+  useEffect(() => {
+    const fetchJobDesignations = async () => {
+      if (status !== "authenticated" || !session?.access_token) {
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/designations`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        setDesignations(result.docs || []);
+        setIsLoading(false);
+      } catch (err) {
+        setError(err.message || "An unexpected error occurred.");
+        setIsLoading(false);
+      }
+    };
+
+    fetchJobDesignations();
+  }, [status, session?.access_token]);
+
   return (
     <Tabs defaultValue="myDesignation">
       <ScrollArea>
@@ -35,10 +78,10 @@ const DesignationTabs = () => {
       </ScrollArea>
 
       <TabsContent value="myDesignation">
-        <MyJobDesignation />
+        <MyJobDesignation designations={designations} isLoading={isLoading} error={error}/>
       </TabsContent>
       <TabsContent value="addDesignation">
-        <AddJobDesignation />
+        <AddJobDesignation designations={designations} accessToken={accessToken} />
       </TabsContent>
     </Tabs>
   );
