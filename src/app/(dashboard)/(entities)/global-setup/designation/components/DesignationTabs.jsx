@@ -78,7 +78,7 @@ const DesignationTabs = () => {
       </ScrollArea>
 
       <TabsContent value="myDesignation">
-        <MyJobDesignation designations={designations} isLoading={isLoading} error={error}/>
+        <MyJobDesignation designations={designations} isLoading={isLoading} error={error} accessToken={accessToken}/>
       </TabsContent>
       <TabsContent value="addDesignation">
         <AddJobDesignation designations={designations} accessToken={accessToken} />

@@ -80,7 +80,7 @@ const SkillTabs = () => {
       </ScrollArea>
 
       <TabsContent value="mySkills">
-        <MySkills skills={skills} isLoading={isLoading} error={error}/>
+        <MySkills skills={skills} isLoading={isLoading} error={error} accessToken={accessToken}/>
       </TabsContent>
       <TabsContent value="addSkills">
         <AddSkills skills={skills} accessToken={accessToken}/>

@@ -54,7 +54,7 @@ const AddJobType = ({ jobTypes, accessToken }) => {
         toast({
           title: "Failed!",
           description: "Failed to add new job type",
-          variant: "ourDesctructive",
+          variant: "ourDestructive",
         });
       }
     } catch (error) {

@@ -2,7 +2,7 @@ import React from "react";
 import AcademicActivitiesTable from "../components/AcademicActivitiesTable.jsx";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const AcademicActivities = ({activities, isLoading, error}) => {
+const AcademicActivities = ({activities, isLoading, error, accessToken}) => {
   
   if (isLoading) {
     return (
@@ -25,7 +25,7 @@ const AcademicActivities = ({activities, isLoading, error}) => {
   }
   return (
     <div className="p-4">
-      <AcademicActivitiesTable activities={activities} />
+      <AcademicActivitiesTable activities={activities} accessToken={accessToken}/>
     </div>
   );
 };

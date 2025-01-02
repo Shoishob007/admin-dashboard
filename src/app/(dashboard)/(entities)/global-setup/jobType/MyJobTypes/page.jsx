@@ -4,7 +4,7 @@ import JobTypeTable from "../components/JobTypeTable.jsx";
 import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const myJobTypes = ({jobTypes, isLoading, error}) => {
+const myJobTypes = ({jobTypes, isLoading, error, accessToken}) => {
 
   if (isLoading) {
     return (
@@ -27,7 +27,7 @@ const myJobTypes = ({jobTypes, isLoading, error}) => {
   }
   return (
     <div className="p-4">
-      <JobTypeTable jobTypes={jobTypes} />
+      <JobTypeTable jobTypes={jobTypes} accessToken={accessToken} />
     </div>
   );
 };

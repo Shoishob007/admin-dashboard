@@ -53,7 +53,7 @@ const AddDegreeLevels = ({ degreeLevels, accessToken }) => {
         toast({
           title: "Failed!",
           description: "Failed to add new degree level",
-          variant: "ourDesctructive",
+          variant: "ourDestructive",
         });
       }
     } catch (error) {

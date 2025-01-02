@@ -2,7 +2,7 @@ import React from "react";
 import JobDesignationTable from "../components/JobDesignationTable.jsx";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const MyJobDesignation = ({designations, isLoading, error}) => {
+const MyJobDesignation = ({designations, isLoading, error, accessToken}) => {
   
   if (isLoading) {
     return (
@@ -25,7 +25,7 @@ const MyJobDesignation = ({designations, isLoading, error}) => {
   }
   return (
     <div className="p-4">
-      <JobDesignationTable designations={designations} />
+      <JobDesignationTable designations={designations} accessToken={accessToken} />
     </div>
   );
 };

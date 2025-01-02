@@ -55,7 +55,7 @@ const AddJobRoles = ({jobRoles, accessToken}) => {
         toast({
           title: "Failed!",
           description: "Failed to add new job role",
-          variant: "ourDesctructive",
+          variant: "ourDestructive",
         });
       }
     } catch (error) {

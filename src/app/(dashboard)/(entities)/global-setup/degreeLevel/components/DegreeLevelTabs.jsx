@@ -77,7 +77,7 @@ const DegreeLevelTabs = () => {
       </ScrollArea>
 
       <TabsContent value="myDegreeLevels">
-        <MyDegreeLevels degreeLevels={degreeLevels} isLoading={isLoading} error={error} />
+        <MyDegreeLevels degreeLevels={degreeLevels} isLoading={isLoading} error={error} accessToken={accessToken} />
       </TabsContent>
       <TabsContent value="addDegreeLevels">
         <AddDegreeLevels degreeLevels={degreeLevels} accessToken={accessToken} />

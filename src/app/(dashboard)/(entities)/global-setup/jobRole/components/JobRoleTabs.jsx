@@ -79,7 +79,7 @@ const JobRoleTabs = () => {
       </ScrollArea>
 
       <TabsContent value="myJobRoles">
-        <MyJobRoles jobRoles={jobRoles} isLoading={isLoading} error={error} />
+        <MyJobRoles jobRoles={jobRoles} isLoading={isLoading} error={error} accessToken={accessToken} />
       </TabsContent>
       <TabsContent value="addJobRoles">
         <AddJobRoles jobRoles={jobRoles} accessToken={accessToken}/>

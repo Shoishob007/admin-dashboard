@@ -54,7 +54,7 @@ const AddSocialMedia = ({ socialMedia, accessToken }) => {
           toast({
             title: "Failed!",
             description: "Failed to add social media platform.",
-            variant: "ourDesctructive",
+            variant: "ourDestructive",
           });
         }
       } catch (error) {

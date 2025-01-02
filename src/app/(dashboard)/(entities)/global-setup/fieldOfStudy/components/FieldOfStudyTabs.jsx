@@ -80,7 +80,7 @@ const FieldOfStudyTabs = () => {
       </ScrollArea>
 
       <TabsContent value="myFieldOfStudy">
-        <MyFieldOfStudy fieldOfStudy={fieldOfStudy} isLoading={isLoading} error={error} />
+        <MyFieldOfStudy fieldOfStudy={fieldOfStudy} isLoading={isLoading} error={error} accessToken={accessToken} />
       </TabsContent>
       <TabsContent value="addFieldOfStudy">
         <AddFieldOfStudy fieldOfStudy={fieldOfStudy} accessToken={accessToken} />

@@ -3,7 +3,7 @@ import React from "react";
 import DegreeLevelTable from "../components/DegreeLevelTable.jsx";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const MyDegreeLevels = ({degreeLevels, isLoading, error}) => {
+const MyDegreeLevels = ({degreeLevels, isLoading, error, accessToken}) => {
 
   if (isLoading) {
     return (
@@ -26,7 +26,7 @@ const MyDegreeLevels = ({degreeLevels, isLoading, error}) => {
   }
   return (
     <div className="p-4">
-      <DegreeLevelTable degreeLevels={degreeLevels} />
+      <DegreeLevelTable degreeLevels={degreeLevels} accessToken={accessToken} />
     </div>
   );
 };

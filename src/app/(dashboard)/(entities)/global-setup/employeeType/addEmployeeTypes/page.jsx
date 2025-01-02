@@ -53,7 +53,7 @@ const AddEmployeeTypes = ({ employeeTypes, accessToken }) => {
         toast({
           title: "Failed!",
           description: "Failed to add new employee type",
-          variant: "ourDesctructive",
+          variant: "ourDestructive",
         });
       }
     } catch (error) {

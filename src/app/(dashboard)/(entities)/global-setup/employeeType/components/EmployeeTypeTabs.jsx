@@ -78,7 +78,7 @@ const EmployeeTypeTabs = () => {
       </ScrollArea>
 
       <TabsContent value="myEmployeeTypes">
-        <MyEmployeeTypes employeeTypes={employeeTypes} isLoading={isLoading} error={error} />
+        <MyEmployeeTypes employeeTypes={employeeTypes} isLoading={isLoading} error={error} accessToken={accessToken} />
       </TabsContent>
       <TabsContent value="addEmployeeTypes">
         <AddEmployeeTypes employeeTypes={employeeTypes} accessToken={accessToken} />

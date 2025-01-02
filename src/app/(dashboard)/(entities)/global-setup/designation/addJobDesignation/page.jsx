@@ -53,7 +53,7 @@ const AddJobDesignation = ({designations, accessToken}) => {
           toast({
             title: "Failed!",
             description: "Failed to add new designation",
-            variant: "ourDesctructive",
+            variant: "ourDestructive",
           });
         }
       } catch (error) {

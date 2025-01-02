@@ -2,7 +2,7 @@ import React from "react";
 import SkillTable from "../components/SkillTable";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const MySkills = ({skills, isLoading, error}) => {
+const MySkills = ({skills, isLoading, error, accessToken}) => {
 
   if (isLoading) {
     return (
@@ -25,7 +25,7 @@ const MySkills = ({skills, isLoading, error}) => {
   }
   return (
     <div className="p-4">
-      <SkillTable skills={skills} />
+      <SkillTable skills={skills} accessToken={accessToken} />
     </div>
   );
 };

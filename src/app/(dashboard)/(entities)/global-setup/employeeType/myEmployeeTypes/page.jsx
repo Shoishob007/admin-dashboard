@@ -2,7 +2,7 @@ import React from "react";
 import EmployeeTypesTable from "../components/EmployeeTypesTable.jsx";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const MyEmployeeTypes = ({employeeTypes, isLoading, error}) => {
+const MyEmployeeTypes = ({employeeTypes, isLoading, error, accessToken}) => {
   
   if (isLoading) {
     return (
@@ -25,7 +25,7 @@ const MyEmployeeTypes = ({employeeTypes, isLoading, error}) => {
   }
   return (
     <div className="p-4">
-      <EmployeeTypesTable employeeTypes={employeeTypes} />
+      <EmployeeTypesTable employeeTypes={employeeTypes} accessToken={accessToken}/>
     </div>
   );
 };

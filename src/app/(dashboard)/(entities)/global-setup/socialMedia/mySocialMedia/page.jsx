@@ -3,7 +3,7 @@ import React from "react";
 import SocialMediaTable from "../components/SocialMediaTable.jsx";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const MySocialMedia = ({socialMedia, isLoading, error}) => {
+const MySocialMedia = ({socialMedia, isLoading, error, accessToken}) => {
   
   if (isLoading) {
     return (
@@ -26,7 +26,7 @@ const MySocialMedia = ({socialMedia, isLoading, error}) => {
   }
   return (
     <div className="p-4">
-      <SocialMediaTable socialMedia={socialMedia} />
+      <SocialMediaTable socialMedia={socialMedia} accessToken={accessToken} />
     </div>
   );
 };

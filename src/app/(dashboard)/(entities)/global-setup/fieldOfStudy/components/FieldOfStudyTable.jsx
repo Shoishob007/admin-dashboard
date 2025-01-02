@@ -31,6 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "@/hooks/use-toast";
 
 export const columns = [
   {
@@ -77,47 +78,84 @@ export const columns = [
       <div className="capitalize">{row.getValue("title")}</div>
     ),
   },
-  {
-    id: "actions",
-    header: "Actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const fieldOfStudy = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(fieldOfStudy.id)}
-            >
-              Copy field of study ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Edit field of study</DropdownMenuItem>
-            <DropdownMenuItem>Delete field of study</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
 
-export default function FieldOfStudyTable({ fieldOfStudy }) {
-  const data = fieldOfStudy;
+export default function FieldOfStudyTable({ fieldOfStudy, accessToken }) {
+  const [data, setData] = React.useState(fieldOfStudy);
   const [sorting, setSorting] = React.useState([]);
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  async function handleDelete(id) {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/field-of-studies/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete the document.");
+      }
+
+      setData((prevData) => prevData.filter((item) => item.id !== id));
+      toast({
+        title: "Success!",
+        description: "Deleted selected document.",
+        variant: "ourSuccess",
+      });
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      toast({
+        title: "Failed!",
+        description: "Failed to delete the document. Please try again.",
+        variant: "ourDestructive",
+      });
+    }
+  }
+
   const table = useReactTable({
     data,
-    columns,
+    columns: [
+      ...columns,
+      {
+        id: "actions",
+        header: "Actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+          const fieldOfStudy = row.original;
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => navigator.clipboard.writeText(fieldOfStudy.id)}
+                >
+                  Copy field of study ID
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>Edit field of study</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDelete(fieldOfStudy.id)}>
+                  Delete field of study
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      },
+    ],
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),

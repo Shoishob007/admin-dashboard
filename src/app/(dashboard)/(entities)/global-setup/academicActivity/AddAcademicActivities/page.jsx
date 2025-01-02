@@ -53,7 +53,7 @@ const AddAcademicActivities = ({ activities, accessToken }) => {
         toast({
           title: "Failed!",
           description: "Failed to add new academic activity",
-          variant: "ourDesctructive",
+          variant: "ourDestructive",
         });
       }
     } catch (error) {

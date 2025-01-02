@@ -55,7 +55,7 @@ const AddSkills = ({ skills, accessToken }) => {
         toast({
           title: "Failed!",
           description: "Failed to add skill.",
-          variant: "ourDesctructive",
+          variant: "ourDestructive",
         });
       }
     } catch (error) {

@@ -2,7 +2,7 @@ import React from "react";
 import JobRoleTable from "../components/JobRoleTable.jsx";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const MyJobRoles = ({jobRoles, isLoading, error}) => {
+const MyJobRoles = ({jobRoles, isLoading, error, accessToken}) => {
 
   if (isLoading) {
     return (
@@ -25,7 +25,7 @@ const MyJobRoles = ({jobRoles, isLoading, error}) => {
   }
   return (
     <div className="p-4">
-      <JobRoleTable jobRoles={jobRoles} />
+      <JobRoleTable jobRoles={jobRoles} accessToken={accessToken}/>
     </div>
   );
 };

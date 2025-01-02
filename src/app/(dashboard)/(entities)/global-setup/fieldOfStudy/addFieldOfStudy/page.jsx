@@ -53,7 +53,7 @@ const AddFieldOfStudy = ({fieldOfStudy, accessToken}) => {
         toast({
           title: "Failed!",
           description: "Failed to add new field of study",
-          variant: "ourDesctructive",
+          variant: "ourDestructive",
         });
       }
     } catch (error) {

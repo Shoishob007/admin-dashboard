@@ -2,7 +2,7 @@ import React from "react";
 import FieldOfStudyTable from "../components/FieldOfStudyTable.jsx";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const MyFieldOfStudy = ({fieldOfStudy, isLoading, error}) => {
+const MyFieldOfStudy = ({fieldOfStudy, isLoading, error, accessToken}) => {
 
   if (isLoading) {
     return (
@@ -25,7 +25,7 @@ const MyFieldOfStudy = ({fieldOfStudy, isLoading, error}) => {
   }
   return (
     <div className="p-4">
-      <FieldOfStudyTable fieldOfStudy={fieldOfStudy} />
+      <FieldOfStudyTable fieldOfStudy={fieldOfStudy} accessToken={accessToken}/>
     </div>
   );
 };

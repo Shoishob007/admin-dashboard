@@ -78,7 +78,7 @@ const SocialMediaTabs = () => {
       </ScrollArea>
 
       <TabsContent value="mySocialMedia">
-        <MySocialMedia socialMedia={socialMedia} isLoading={isLoading} error={error} />
+        <MySocialMedia socialMedia={socialMedia} isLoading={isLoading} error={error} accessToken={accessToken} />
       </TabsContent>
       <TabsContent value="addSocialMedia">
         <AddSocialMedia socialMedia={socialMedia} accessToken={accessToken} />

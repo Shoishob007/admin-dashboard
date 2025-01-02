@@ -78,7 +78,7 @@ const AcademicActivityTabs = () => {
       </ScrollArea>
 
       <TabsContent value="viewActivity">
-        <AcademicActivities activities={activities} isLoading={isLoading} error={error} />
+        <AcademicActivities activities={activities} isLoading={isLoading} error={error} accessToken={accessToken} />
       </TabsContent>
       <TabsContent value="addActivity">
         <AddAcademicActivities activities={activities} accessToken={accessToken} />
