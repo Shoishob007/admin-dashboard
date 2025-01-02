@@ -98,8 +98,46 @@ const data = {
     },
     {
       title: "Global Entities",
-      url: "/global-setup",
+      url: "#",
       icon: Info,
+      items: [
+        {
+          title: "Skills",
+          url: "/global-setup/skills",
+        },
+        {
+          title: "Job Roles",
+          url: "/global-setup/jobRole",
+        },
+        {
+          title: "Designation",
+          url: "/global-setup/designation",
+        },
+        {
+          title: "Degree Level",
+          url: "/global-setup/degreeLevel",
+        },
+        {
+          title: "Job Type",
+          url: "/global-setup/jobType",
+        },
+        {
+          title: "Employee Type",
+          url: "/global-setup/employeeType",
+        },
+        {
+          title: "Field Of Study",
+          url: "/global-setup/fieldOfStudy",
+        },
+        {
+          title: "Social Media",
+          url: "/global-setup/socialMedia",
+        },
+        {
+          title: "Academic Activity",
+          url: "/global-setup/academicActivity",
+        },
+      ],
     },
     {
       title: "Settings",
