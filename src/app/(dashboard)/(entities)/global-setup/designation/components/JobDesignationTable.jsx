@@ -32,6 +32,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
+import { deleteJobDesignationFunc, editJobDesignationFunc } from "../functions/JobDesignationFunctions";
+import { JobDesignationDialogue } from "./JobDesignationDialogue";
 
 export const columns = [
   {
@@ -86,39 +88,30 @@ export default function JobDesignationTable({ designations, accessToken }) {
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingDesignation, setEditingDesignation] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   async function handleDelete(id) {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/designations/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete the document.");
-      }
-
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-      toast({
-        title: "Success!",
-        description: "Deleted selected document.",
-        variant: "ourSuccess",
-      });
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      toast({
-        title: "Failed!",
-        description: "Failed to delete the document. Please try again.",
-        variant: "ourDestructive",
-      });
-    }
+    deleteJobDesignationFunc({ id, accessToken, setData });
   }
+
+  const handleEdit = (designation) => {
+    setEditingDesignation(designation);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmitEdit = (updatedTitle) => {
+    setLoading(true);
+    editJobDesignationFunc({
+      id: editingDesignation.id,
+      updatedTitle,
+      accessToken,
+      setData,
+      setIsDialogOpen,
+      setLoading,
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -146,7 +139,9 @@ export default function JobDesignationTable({ designations, accessToken }) {
                   Copy designation ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit designation</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleEdit(designation)}>
+                  Edit designation
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDelete(designation.id)}>
                   Delete designation
                 </DropdownMenuItem>
@@ -261,6 +256,15 @@ export default function JobDesignationTable({ designations, accessToken }) {
           </TableBody>
         </Table>
       </div>
+
+      <JobDesignationDialogue
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleSubmitEdit}
+        initialTitle={editingDesignation?.title || ""}
+        isEditing={true}
+        loading={loading}
+      />
     </div>
   );
 }

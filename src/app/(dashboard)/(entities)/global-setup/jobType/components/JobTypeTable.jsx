@@ -31,7 +31,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import { deleteJobTypeFunc, editJobTypeFunc } from "../functions/jobTypeFunctions";
+import { JobTypeDialogue } from "./JobTypeDialogue";
 
 export const columns = [
   {
@@ -74,9 +75,7 @@ export const columns = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("title")}</div>,
   },
 ];
 
@@ -86,39 +85,30 @@ export default function JobTypeTable({ jobTypes, accessToken }) {
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingJobType, setEditingJobType] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
-  async function handleDelete(id) {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/job-types/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  const handleDelete = (id) => {
+    deleteJobTypeFunc({ id, accessToken, setData });
+  };
 
-      if (!response.ok) {
-        throw new Error("Failed to delete the document.");
-      }
+  const handleEdit = (jobType) => {
+    setEditingJobType(jobType);
+    setIsDialogOpen(true);
+  };
 
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-      toast({
-        title: "Success!",
-        description: "Deleted selected document.",
-        variant: "ourSuccess",
-      });
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      toast({
-        title: "Failed!",
-        description: "Failed to delete the document. Please try again.",
-        variant: "ourDestructive",
-      });
-    }
-  }
+  const handleSubmitEdit = (updatedTitle) => {
+    setLoading(true);
+    editJobTypeFunc({
+      id: editingJobType.id,
+      updatedTitle,
+      accessToken,
+      setData,
+      setIsDialogOpen,
+      setLoading,
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -146,7 +136,9 @@ export default function JobTypeTable({ jobTypes, accessToken }) {
                   Copy job type ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit job-type</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleEdit(jobType)}>
+                  Edit job-type
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDelete(jobType.id)}>
                   Delete job-type
                 </DropdownMenuItem>
@@ -261,6 +253,16 @@ export default function JobTypeTable({ jobTypes, accessToken }) {
           </TableBody>
         </Table>
       </div>
+
+      {/*SkillDialogue */}
+      <JobTypeDialogue
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleSubmitEdit}
+        initialTitle={editingJobType?.title || ""}
+        isEditing={true}
+        loading={loading}
+      />
     </div>
   );
 }

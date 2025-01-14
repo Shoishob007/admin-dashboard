@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import JobTypeTable from "../components/JobTypeTable.jsx";
-import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const myJobTypes = ({jobTypes, isLoading, error, accessToken}) => {

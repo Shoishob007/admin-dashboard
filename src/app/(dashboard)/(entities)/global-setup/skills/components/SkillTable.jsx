@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   flexRender,
@@ -9,7 +7,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -31,7 +28,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import { deleteSkillFunc, editSkillFunc } from "../functions/SkillFunctions";
+import { SkillDialogue } from "./skillDialogue";
 
 export const columns = [
   {
@@ -70,12 +68,12 @@ export const columns = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Skill Title
-          <ArrowUpDown />
+          <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
+      <div className="">{row.getValue("title")}</div>
     ),
   },
 ];
@@ -86,39 +84,30 @@ export default function SkillTable({ skills, accessToken }) {
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingSkill, setEditingSkill] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
-  async function handleDelete(id) {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/skills/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+  const handleDelete = (id) => {
+    deleteSkillFunc({ id, accessToken, setData });
+  };
 
-      if (!response.ok) {
-        throw new Error("Failed to delete the document.");
-      }
+  const handleEdit = (skill) => {
+    setEditingSkill(skill);
+    setIsDialogOpen(true);
+  };
 
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-      toast({
-        title: "Success!",
-        description: "Deleted selected document.",
-        variant: "ourSuccess",
-      });
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      toast({
-        title: "Failed!",
-        description: "Failed to delete the document. Please try again.",
-        variant: "ourDestructive",
-      });
-    }
-  }
+  const handleSubmitEdit = (updatedTitle) => {
+    setLoading(true);
+    editSkillFunc({
+      id: editingSkill.id,
+      updatedTitle,
+      accessToken,
+      setData,
+      setIsDialogOpen,
+      setLoading,
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -130,13 +119,13 @@ export default function SkillTable({ skills, accessToken }) {
         enableHiding: false,
         cell: ({ row }) => {
           const skill = row.original;
-    
+
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
                   <span className="sr-only">Open menu</span>
-                  <MoreHorizontal />
+                  <MoreHorizontal className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -146,8 +135,12 @@ export default function SkillTable({ skills, accessToken }) {
                   Copy skill ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit skill</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleDelete(skill.id)}>Delete skill</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleEdit(skill)}>
+                  Edit skill
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDelete(skill.id)}>
+                  Delete skill
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           );
@@ -184,7 +177,7 @@ export default function SkillTable({ skills, accessToken }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto border-gray-300">
-              Columns <ChevronDown />
+              Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -208,7 +201,7 @@ export default function SkillTable({ skills, accessToken }) {
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="">
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <TableHead
                     key={header.id}
@@ -227,11 +220,11 @@ export default function SkillTable({ skills, accessToken }) {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row, index) => (
+              table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={`odd:bg-gray-100 even:bg-white hover:bg-none border-gray-300`}
+                  className="odd:bg-gray-100 even:bg-white hover:bg-gray-200 border-gray-300"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -249,7 +242,7 @@ export default function SkillTable({ skills, accessToken }) {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={columns.length + 1}
                   className="h-24 text-center"
                 >
                   No results.
@@ -259,6 +252,16 @@ export default function SkillTable({ skills, accessToken }) {
           </TableBody>
         </Table>
       </div>
+
+      {/*SkillDialogue */}
+      <SkillDialogue
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleSubmitEdit}
+        initialTitle={editingSkill?.title || ""}
+        isEditing={true}
+        loading={loading}
+      />
     </div>
   );
 }

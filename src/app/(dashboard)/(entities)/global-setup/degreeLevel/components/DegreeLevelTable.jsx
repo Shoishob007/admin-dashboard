@@ -31,7 +31,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import {
+  deleteDegreeLevelFunc,
+  editDegreeLevelFunc,
+} from "../functions/DegreeLevelFunctions";
+import { DegreeLevelDialogue } from "./DegreeLevelDialogue";
 
 export const columns = [
   {
@@ -74,46 +78,40 @@ export const columns = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("title")}</div>,
   },
 ];
 
-export default function JobRoleTable({ degreeLevels, accessToken }) {
+export default function DegreeLevelTable({ degreeLevels, accessToken }) {
   const [data, setData] = React.useState(degreeLevels);
+  const [sorting, setSorting] = React.useState([]);
+  const [columnFilters, setColumnFilters] = React.useState([]);
+  const [columnVisibility, setColumnVisibility] = React.useState({});
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingDegreeLevel, setEditingDegreeLevel] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   async function handleDelete(id) {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to delete the document.");
-      }
-
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-      toast({
-        title: "Success!",
-        description: "Deleted selected file",
-        variant: "ourSuccess",
-      });
-      
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      alert("Failed to delete the document. Please try again.");
-      toast({
-        title: "Failed!",
-        description: "Failed to delete the document. Please try again.",
-        variant: "ourDestructive",
-      });
-    }
+    deleteDegreeLevelFunc({ id, accessToken, setData });
   }
+
+  const handleEdit = (degreeLevel) => {
+    setEditingDegreeLevel(degreeLevel);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmitEdit = (updatedTitle) => {
+    setLoading(true);
+    editDegreeLevelFunc({
+      id: editingDegreeLevel.id,
+      updatedTitle,
+      accessToken,
+      setData,
+      setIsDialogOpen,
+      setLoading,
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -141,10 +139,10 @@ export default function JobRoleTable({ degreeLevels, accessToken }) {
                   Copy degree level ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit degree level</DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => handleDelete(degreeLevel.id)}
-                >
+                <DropdownMenuItem onClick={() => handleEdit(degreeLevel)}>
+                  Edit degree level
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDelete(degreeLevel.id)}>
                   Delete degree level
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -153,12 +151,19 @@ export default function JobRoleTable({ degreeLevels, accessToken }) {
         },
       },
     ],
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     state: {
-      data,
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
     },
   });
 
@@ -188,9 +193,7 @@ export default function JobRoleTable({ degreeLevels, accessToken }) {
                   key={column.id}
                   className="capitalize"
                   checked={column.getIsVisible()}
-                  onCheckedChange={(value) =>
-                    column.toggleVisibility(!!value)
-                  }
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
                 >
                   {column.id}
                 </DropdownMenuCheckboxItem>
@@ -253,6 +256,16 @@ export default function JobRoleTable({ degreeLevels, accessToken }) {
           </TableBody>
         </Table>
       </div>
+
+      {/*DegreeLevelDialogue */}
+      <DegreeLevelDialogue
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleSubmitEdit}
+        initialTitle={editingDegreeLevel?.title || ""}
+        isEditing={true}
+        loading={loading}
+      />
     </div>
   );
 }

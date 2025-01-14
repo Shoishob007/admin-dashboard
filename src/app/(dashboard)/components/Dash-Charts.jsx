@@ -159,7 +159,7 @@ export function DashColumnChart() {
         backgroundColor: filteredData.map((item) => {
           switch (item.status) {
             case "success":
-              return "#4ADE80";
+              return "#10B981";
             case "processing":
               return "#FBBF24";
             case "failed":
@@ -224,7 +224,7 @@ export function DashColumnChart() {
             <div
               className={`w-8 h-3 bg-gray-200 border-[3px] ${
                 category === "success"
-                  ? "border-green-400"
+                  ? "border-emerald-500"
                   : category === "processing"
                   ? "border-yellow-400"
                   : "border-rose-400"
