@@ -1,6 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 
-export const addDegreeLevelFunc = async ({
+export const addEmployeeTypeFunc = async ({
     title,
     accessToken,
     setIsDialogOpen,
@@ -8,40 +8,39 @@ export const addDegreeLevelFunc = async ({
 }) => {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ title }),
-            }
+          `${process.env.NEXT_PUBLIC_API_URL}/api/employee-types`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ title }),
+          }
         );
         if (response.ok) {
-            toast({
-                title: "Success!",
-                description: "New degree level added successfully.",
-                variant: "ourSuccess",
-            });
-            setTitle("");
-            setIsDialogOpen(false);
+          toast({
+            title: "Success!",
+            description: "New employee type added successfully.",
+            variant: "ourSuccess",
+          });
+          setIsDialogOpen(false);
         } else {
-            toast({
-                title: "Failed!",
-                description: "Failed to add new degree level",
-                variant: "ourDestructive",
-            });
+          toast({
+            title: "Failed!",
+            description: "Failed to add new employee type",
+            variant: "ourDestructive",
+          });
         }
-    } catch (error) {
+      } catch (error) {
         console.error("Error:", error);
         alert("An error occurred.");
-    } finally {
+      } finally {
         setLoading(false);
-    }
+      }
 };
 
-export const editDegreeLevelFunc = async ({
+export const editEmployeeTypeFunc = async ({
     id,
     updatedTitle,
     accessToken,
@@ -51,7 +50,7 @@ export const editDegreeLevelFunc = async ({
 }) => {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels/${id}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/employee-types/${id}`,
             {
                 method: "PATCH",
                 headers: {
@@ -69,14 +68,14 @@ export const editDegreeLevelFunc = async ({
             );
             toast({
                 title: "Success!",
-                description: "New degree level added successfully.",
+                description: "Field of study updated successfully.",
                 variant: "ourSuccess",
             });
             setIsDialogOpen(false);
         } else {
             toast({
                 title: "Failed!",
-                description: "Failed to add new degree level",
+                description: "Failed to update field of study",
                 variant: "ourDestructive",
             });
         }
@@ -88,9 +87,9 @@ export const editDegreeLevelFunc = async ({
     }
 };
 
-export const deleteDegreeLevelFunc = async ({ id, accessToken, setData }) => {
+export const deleteEmployeeTypeFunc = async ({ id, accessToken, setData }) => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/employee-types/${id}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${accessToken}`,

@@ -31,7 +31,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import {
+  deleteFieldOfStudyFunc,
+  editFieldOfStudyFunc,
+} from "../functions/fieldOfStudyFunctions";
+import { FieldOfStudyDialogue } from "./FieldOfStudyDialogue";
 
 export const columns = [
   {
@@ -74,9 +78,7 @@ export const columns = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("title")}</div>,
   },
 ];
 
@@ -86,39 +88,30 @@ export default function FieldOfStudyTable({ fieldOfStudy, accessToken }) {
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingFieldOfStudy, setEditingFieldOfStudy] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   async function handleDelete(id) {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/field-of-studies/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete the document.");
-      }
-
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-      toast({
-        title: "Success!",
-        description: "Deleted selected document.",
-        variant: "ourSuccess",
-      });
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      toast({
-        title: "Failed!",
-        description: "Failed to delete the document. Please try again.",
-        variant: "ourDestructive",
-      });
-    }
+    deleteFieldOfStudyFunc({ id, accessToken, setData });
   }
+
+  const handleEdit = (fos) => {
+    setEditingFieldOfStudy(fos);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmitEdit = (updatedTitle) => {
+    setLoading(true);
+    editFieldOfStudyFunc({
+      id: editingFieldOfStudy.id,
+      updatedTitle,
+      accessToken,
+      setData,
+      setIsDialogOpen,
+      setLoading,
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -146,7 +139,9 @@ export default function FieldOfStudyTable({ fieldOfStudy, accessToken }) {
                   Copy field of study ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit field of study</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleEdit(fieldOfStudy)}>
+                  Edit field of study
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDelete(fieldOfStudy.id)}>
                   Delete field of study
                 </DropdownMenuItem>
@@ -261,6 +256,15 @@ export default function FieldOfStudyTable({ fieldOfStudy, accessToken }) {
           </TableBody>
         </Table>
       </div>
+
+      <FieldOfStudyDialogue
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleSubmitEdit}
+        initialTitle={editingFieldOfStudy?.title || ""}
+        isEditing={true}
+        loading={loading}
+      />
     </div>
   );
 }

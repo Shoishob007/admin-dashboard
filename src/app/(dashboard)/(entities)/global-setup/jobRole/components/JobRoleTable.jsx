@@ -31,7 +31,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import {
+  deleteJobRoleFunc,
+  editJobRoleFunc,
+} from "../functions/JobRoleFunctions";
+import { JobRoleDialogue } from "./JobRoleDialogue";
 
 export const columns = [
   {
@@ -74,9 +78,7 @@ export const columns = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("title")}</div>,
   },
 ];
 
@@ -86,39 +88,30 @@ export default function JobRoleTable({ jobRoles, accessToken }) {
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingJobRole, setEditingJobRole] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   async function handleDelete(id) {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/job-roles/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete the document.");
-      }
-
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-      toast({
-        title: "Success!",
-        description: "Deleted selected document.",
-        variant: "ourSuccess",
-      });
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      toast({
-        title: "Failed!",
-        description: "Failed to delete the document. Please try again.",
-        variant: "ourDestructive",
-      });
-    }
+    deleteJobRoleFunc({ id, accessToken, setData });
   }
+
+  const handleEdit = (jobRole) => {
+    setEditingJobRole(jobRole);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmitEdit = (updatedTitle) => {
+    setLoading(true);
+    editJobRoleFunc({
+      id: editingJobRole.id,
+      updatedTitle,
+      accessToken,
+      setData,
+      setIsDialogOpen,
+      setLoading,
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -146,7 +139,9 @@ export default function JobRoleTable({ jobRoles, accessToken }) {
                   Copy job role ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit job-role</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleEdit(jobRole)}>
+                  Edit job-role
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDelete(jobRole.id)}>
                   Delete job-role
                 </DropdownMenuItem>
@@ -261,6 +256,16 @@ export default function JobRoleTable({ jobRoles, accessToken }) {
           </TableBody>
         </Table>
       </div>
+
+      {/* Dialogue */}
+      <JobRoleDialogue
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleSubmitEdit}
+        initialTitle={editingJobRole?.title || ""}
+        isEditing={true}
+        loading={loading}
+      />
     </div>
   );
 }

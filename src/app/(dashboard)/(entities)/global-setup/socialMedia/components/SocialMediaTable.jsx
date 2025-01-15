@@ -31,7 +31,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import {
+  deleteSocialMediaFunc,
+  editSocialMediaFunc,
+} from "../functions/SocialMediaFunctions";
+import { SocialMediaDialogue } from "./SocialMedialDialogue";
 
 export const columns = [
   {
@@ -86,39 +90,30 @@ export default function SocialMediaTable({ socialMedia, accessToken }) {
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingSocialMedia, setEditingSocialMedia] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   async function handleDelete(id) {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/social-medias/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete the document.");
-      }
-
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-      toast({
-        title: "Success!",
-        description: "Deleted selected document.",
-        variant: "ourSuccess",
-      });
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      toast({
-        title: "Failed!",
-        description: "Failed to delete the document. Please try again.",
-        variant: "ourDestructive",
-      });
-    }
+    deleteSocialMediaFunc({ id, accessToken, setData });
   }
+
+  const handleEdit = (socialMedium) => {
+    setEditingSocialMedia(socialMedium);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmitEdit = (updatedTitle) => {
+    setLoading(true);
+    editSocialMediaFunc({
+      id: editingSocialMedia.id,
+      updatedTitle,
+      accessToken,
+      setData,
+      setIsDialogOpen,
+      setLoading,
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -130,7 +125,7 @@ export default function SocialMediaTable({ socialMedia, accessToken }) {
         enableHiding: false,
         cell: ({ row }) => {
           const socialMedia = row.original;
-    
+
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -146,8 +141,12 @@ export default function SocialMediaTable({ socialMedia, accessToken }) {
                   Copy social media ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit social media</DropdownMenuItem>
-                <DropdownMenuItem onClick={()=> handleDelete(socialMedia.id)}>Delete social media</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleEdit(socialMedia)}>
+                  Edit social media
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleDelete(socialMedia.id)}>
+                  Delete social media
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           );
@@ -259,6 +258,16 @@ export default function SocialMediaTable({ socialMedia, accessToken }) {
           </TableBody>
         </Table>
       </div>
+
+      {/* Dialogue */}
+      <SocialMediaDialogue
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleSubmitEdit}
+        initialTitle={editingSocialMedia?.title || ""}
+        isEditing={true}
+        loading={loading}
+      />
     </div>
   );
 }

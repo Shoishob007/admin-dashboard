@@ -1,6 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 
-export const addDegreeLevelFunc = async ({
+export const addSocialMediaFunc = async ({
     title,
     accessToken,
     setIsDialogOpen,
@@ -8,7 +8,7 @@ export const addDegreeLevelFunc = async ({
 }) => {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/social-medias`,
             {
                 method: "POST",
                 headers: {
@@ -21,27 +21,30 @@ export const addDegreeLevelFunc = async ({
         if (response.ok) {
             toast({
                 title: "Success!",
-                description: "New degree level added successfully.",
+                description: "Social media platform added successfully.",
                 variant: "ourSuccess",
             });
-            setTitle("");
             setIsDialogOpen(false);
         } else {
             toast({
                 title: "Failed!",
-                description: "Failed to add new degree level",
+                description: "Failed to add social media platform.",
                 variant: "ourDestructive",
             });
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("An error occurred.");
+        toast({
+            title: "Failed!",
+            description: "An error occurred.",
+            variant: "ourDestructive",
+        });
     } finally {
         setLoading(false);
     }
 };
 
-export const editDegreeLevelFunc = async ({
+export const editSocialMediaFunc = async ({
     id,
     updatedTitle,
     accessToken,
@@ -51,14 +54,14 @@ export const editDegreeLevelFunc = async ({
 }) => {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels/${id}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/social-medias/${id}`,
             {
                 method: "PATCH",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ title: updatedTitle  }),
+                body: JSON.stringify({ title: updatedTitle }),
             }
         );
         if (response.ok) {
@@ -69,34 +72,41 @@ export const editDegreeLevelFunc = async ({
             );
             toast({
                 title: "Success!",
-                description: "New degree level added successfully.",
+                description: "Social media updated successfully.",
                 variant: "ourSuccess",
             });
             setIsDialogOpen(false);
         } else {
             toast({
                 title: "Failed!",
-                description: "Failed to add new degree level",
+                description: "Failed to update social media",
                 variant: "ourDestructive",
             });
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("An error occurred.");
+        toast({
+            title: "Failed!",
+            description: "An error occurred.",
+            variant: "ourDestructive",
+        });
     } finally {
         setLoading(false);
     }
 };
 
-export const deleteDegreeLevelFunc = async ({ id, accessToken, setData }) => {
+export const deleteSocialMediaFunc = async ({ id, accessToken, setData }) => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels/${id}`, {
-            method: "DELETE",
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-                "Content-Type": "application/json",
-            },
-        });
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/social-medias/${id}`,
+            {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
 
         if (!response.ok) {
             throw new Error("Failed to delete the document.");
@@ -105,13 +115,11 @@ export const deleteDegreeLevelFunc = async ({ id, accessToken, setData }) => {
         setData((prevData) => prevData.filter((item) => item.id !== id));
         toast({
             title: "Success!",
-            description: "Deleted selected file",
+            description: "Deleted selected document.",
             variant: "ourSuccess",
         });
-
     } catch (error) {
         console.error("Error deleting document:", error);
-        alert("Failed to delete the document. Please try again.");
         toast({
             title: "Failed!",
             description: "Failed to delete the document. Please try again.",

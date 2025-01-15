@@ -25,7 +25,7 @@ const AddDegreeLevels = ({ degreeLevels, accessToken }) => {
   return (
     <div className="p-4">
       <Card
-        className="bg-gray-200 dark:bg-gray-900"
+        className="bg-gray-200 dark:bg-gray-900 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-800 transition-colors"
         onClick={() => setIsDialogOpen(true)}
       >
         <CardContent className="p-6 text-center">

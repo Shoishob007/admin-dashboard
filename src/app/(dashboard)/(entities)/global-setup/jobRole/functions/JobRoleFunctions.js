@@ -1,47 +1,50 @@
 import { toast } from "@/hooks/use-toast";
 
-export const addDegreeLevelFunc = async ({
+export const addJobRoleFunc = async ({
     title,
     accessToken,
     setIsDialogOpen,
     setLoading
 }) => {
     try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels`,
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/job-roles`,
             {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ title }),
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ title }),
             }
-        );
-        if (response.ok) {
+          );
+          if (response.ok) {
             toast({
-                title: "Success!",
-                description: "New degree level added successfully.",
-                variant: "ourSuccess",
+              title: "Success!",
+              description: "New job role added successfully.",
+              variant: "ourSuccess",
             });
-            setTitle("");
             setIsDialogOpen(false);
-        } else {
+          } else {
             toast({
-                title: "Failed!",
-                description: "Failed to add new degree level",
-                variant: "ourDestructive",
+              title: "Failed!",
+              description: "Failed to add new job role.",
+              variant: "ourDestructive",
             });
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          toast({
+            title: "Failed!",
+            description: "An error occurred.",
+            variant: "ourDestructive",
+          });
+        } finally {
+          setLoading(false);
         }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred.");
-    } finally {
-        setLoading(false);
-    }
 };
 
-export const editDegreeLevelFunc = async ({
+export const editJobRoleFunc = async ({
     id,
     updatedTitle,
     accessToken,
@@ -51,7 +54,7 @@ export const editDegreeLevelFunc = async ({
 }) => {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels/${id}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/job-roles/${id}`,
             {
                 method: "PATCH",
                 headers: {
@@ -88,9 +91,9 @@ export const editDegreeLevelFunc = async ({
     }
 };
 
-export const deleteDegreeLevelFunc = async ({ id, accessToken, setData }) => {
+export const deleteJobRoleFunc = async ({ id, accessToken, setData }) => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/degree-levels/${id}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/job-roles/${id}`, {
             method: "DELETE",
             headers: {
                 Authorization: `Bearer ${accessToken}`,

@@ -50,9 +50,9 @@ export const editJobDesignationFunc = async ({
 }) => {
     try {
         const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/designations`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/designations/${id}`,
             {
-                method: "POST",
+                method: "PATCH",
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     "Content-Type": "application/json",

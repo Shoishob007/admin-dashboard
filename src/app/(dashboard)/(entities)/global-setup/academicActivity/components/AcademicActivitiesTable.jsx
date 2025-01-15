@@ -31,7 +31,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import {
+  deleteActivityFunc,
+  editActivityFunc,
+} from "../functions/AcademicActivitiesFunctions";
+import { ActivityDialogue } from "./AcademicActivityDialogue";
 
 export const columns = [
   {
@@ -75,7 +79,7 @@ export const columns = [
       );
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
+      <div className="">{row.getValue("title")}</div>
     ),
   },
 ];
@@ -86,39 +90,30 @@ export default function AcademicActivitiesTable({ activities, accessToken }) {
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingActivity, setEditingActivity] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   async function handleDelete(id) {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/academic-activity-types/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete the document.");
-      }
-
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-      toast({
-        title: "Success!",
-        description: "Deleted selected file",
-        variant: "ourSuccess",
-      });
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      toast({
-        title: "Failed!",
-        description: "Failed to delete the document. Please try again.",
-        variant: "ourDestructive",
-      });
-    }
+    deleteActivityFunc({ id, accessToken, setData });
   }
+
+  const handleEdit = (activity) => {
+    setEditingActivity(activity);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmitEdit = (updatedTitle) => {
+    setLoading(true);
+    editActivityFunc({
+      id: editingActivity.id,
+      updatedTitle,
+      accessToken,
+      setData,
+      setIsDialogOpen,
+      setLoading,
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -146,7 +141,9 @@ export default function AcademicActivitiesTable({ activities, accessToken }) {
                   Copy activity type ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit activity type</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleEdit(activity)}>
+                  Edit activity type
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDelete(activity.id)}>
                   Delete activity type
                 </DropdownMenuItem>
@@ -261,6 +258,15 @@ export default function AcademicActivitiesTable({ activities, accessToken }) {
           </TableBody>
         </Table>
       </div>
+
+      <ActivityDialogue
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleSubmitEdit}
+        initialTitle={editingActivity?.title || ""}
+        isEditing={true}
+        loading={loading}
+      />
     </div>
   );
 }

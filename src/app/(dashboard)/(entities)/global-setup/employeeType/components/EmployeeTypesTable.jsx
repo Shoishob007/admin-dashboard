@@ -31,7 +31,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { toast } from "@/hooks/use-toast";
+import {
+  deleteEmployeeTypeFunc,
+  editEmployeeTypeFunc,
+} from "../functions/EmployeeTypeFunctions";
+import { EmployeeTypeDialogue } from "./EmployeeTypeDialogue";
 
 export const columns = [
   {
@@ -74,9 +78,7 @@ export const columns = [
         </Button>
       );
     },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("title")}</div>
-    ),
+    cell: ({ row }) => <div className="">{row.getValue("title")}</div>,
   },
 ];
 
@@ -86,39 +88,30 @@ export default function EmployeeTypesTable({ employeeTypes, accessToken }) {
   const [columnFilters, setColumnFilters] = React.useState([]);
   const [columnVisibility, setColumnVisibility] = React.useState({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingEmployeeType, setEditingEmployeeType] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
 
   async function handleDelete(id) {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/employee-types/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete the document.");
-      }
-
-      setData((prevData) => prevData.filter((item) => item.id !== id));
-      toast({
-        title: "Success!",
-        description: "Deleted selected document.",
-        variant: "ourSuccess",
-      });
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      toast({
-        title: "Failed!",
-        description: "Failed to delete the document. Please try again.",
-        variant: "ourDestructive",
-      });
-    }
+    deleteEmployeeTypeFunc({ id, accessToken, setData });
   }
+
+  const handleEdit = (employeeType) => {
+    setEditingEmployeeType(employeeType);
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmitEdit = (updatedTitle) => {
+    setLoading(true);
+    editEmployeeTypeFunc({
+      id: editingEmployeeType.id,
+      updatedTitle,
+      accessToken,
+      setData,
+      setIsDialogOpen,
+      setLoading,
+    });
+  };
 
   const table = useReactTable({
     data,
@@ -146,7 +139,9 @@ export default function EmployeeTypesTable({ employeeTypes, accessToken }) {
                   Copy employee type ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Edit employee type</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleEdit(employeeType)}>
+                  Edit employee type
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleDelete(employeeType.id)}>
                   Delete employee type
                 </DropdownMenuItem>
@@ -261,6 +256,16 @@ export default function EmployeeTypesTable({ employeeTypes, accessToken }) {
           </TableBody>
         </Table>
       </div>
+
+      {/* Dialogue */}
+      <EmployeeTypeDialogue
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSubmit={handleSubmitEdit}
+        initialTitle={editingEmployeeType?.title || ""}
+        isEditing={true}
+        loading={loading}
+      />
     </div>
   );
 }
