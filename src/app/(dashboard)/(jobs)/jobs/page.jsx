@@ -15,19 +15,20 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Info } from "lucide-react";
+import { House, Info } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { JobFilters } from "@/components/filters/JobFilters";
+import { JobFilters } from "../../components/filters/JobFilters";
 import { filterJobs } from "@/lib/filters";
 import OurPagination from "@/components/Pagination";
+import { DeleteButton, DetailsButton } from "../../components/Buttons";
 
 export default function AllJobs() {
   const [jobs, setJobs] = useState([]);
@@ -140,22 +141,26 @@ export default function AllJobs() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col">
-        <header className="flex h-16 items-center gap-2">
-          <Breadcrumb>
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4">
+          <Breadcrumb className="min-w-24 mt-4 sm:mt-0">
             <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/"><House className="w-4 h-4" /></BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink href="/jobs">All jobs</BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <JobFilters
+            jobs={jobs}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            jobRoles={getJobRoles()}
+            onReset={handleReset}
+          />
         </header>
-        <JobFilters
-          jobs={jobs}
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          jobRoles={getJobRoles()}
-          onReset={handleReset}
-        />
       </div>
 
       {currentJobs.length > 0 ? (
@@ -163,24 +168,24 @@ export default function AllJobs() {
           {currentJobs.map((job) => (
             <Card
               key={job.id}
-              className="relative shadow-md hover:shadow-lg transition-shadow"
+              className="relative shadow-md hover:shadow-lg transition-shadow "
             >
-              <div className="flex bg-orange-100 rounded-t-lg items-center justify-between px-2">
+              <div className="flex bg-gray-700 text-white rounded-t-lg items-center justify-between px-2">
                 <CardHeader className="flex flex-row justify-start items-center space-x-2 py-3 px-0">
                   <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={`${process.env.NEXT_PUBLIC_API_URL}${job.job?.organization?.img?.url}`}
                     />
-                    <AvatarFallback className="bg-white">
+                    <AvatarFallback className="bg-white  text-gray-700">
                       {job.job?.organization?.orgName?.[0]?.toUpperCase() ||
                         "U"}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <CardTitle className="text-sm font-medium">
+                    <CardTitle className="text-sm font-medium text-gray-200">
                       {job?.title || "Unknown job"}
                     </CardTitle>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-200">
                       {job?.employeeType?.title}
                     </p>
                   </div>
@@ -188,14 +193,10 @@ export default function AllJobs() {
                 <div className="py-4">
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200"
-                        >
+                      <TooltipTrigger asChild>
+                        <div className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200 cursor-pointer">
                           <Info className="h-4 w-4" />
-                        </Button>
+                        </div>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>View Details</p>
@@ -207,26 +208,26 @@ export default function AllJobs() {
 
               <CardContent className="mt-2 text-sm text-gray-700">
                 <div className="flex gap-2">
-                  <p className="font-semibold">Role:</p>
-                  <p className="font-semibold">
+                  <p className="font-medium">Role:</p>
+                  <p className="font-medium">
                     {job.jobRole[0]?.title || "N/A"}
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <p className="font-semibold">Designation:</p>
-                  <p className="font-semibold">
+                  <p className="font-medium">Designation:</p>
+                  <p className="font-medium">
                     {job?.designation?.title || "Unknown"}
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <p className="font-semibold">Status:</p>
-                  <p className="font-semibold">
+                  <p className="font-medium">Status:</p>
+                  <p className="font-medium">
                     {job?.jobStatus ? "Active" : "Not Active"}
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <p className="font-semibold">Experience needed:</p>
-                  <p className="font-semibold">
+                  <p className="font-medium">Experience needed:</p>
+                  <p className="font-medium">
                     {job?.yearOfExperience
                       ? parseInt(job?.yearOfExperience)
                       : "N/A"}
@@ -235,20 +236,8 @@ export default function AllJobs() {
               </CardContent>
 
               <CardFooter className="flex justify-between items-center text-gray-700 px-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="p-2 hover:bg-orange-100 border border-orange-300"
-                >
-                  Edit Details
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="p-2 hover:bg-red-100 border border-red-300"
-                >
-                  Delete Job
-                </Button>
+                <DetailsButton />
+                <DeleteButton user={"Job"} />
               </CardFooter>
             </Card>
           ))}

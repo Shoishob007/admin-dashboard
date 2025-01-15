@@ -32,11 +32,11 @@ export const JobFilters = ({
   onReset,
 }) => {
   return (
-    <div className="flex mx-auto max-w-5xl items-center">
-      <div className="w-full space-y-2 dark:bg-gray-900 rounded-lg">
+    <div className="flex max-w-4xl items-center">
+      <div className="w-full space-y-2 dark:bg-gray-800 rounded-lg">
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-2">
+            <div className="flex items-center gap-2">
               <SearchBar
                 placeholder="Search by title, role, designation..."
                 value={filters.searchQuery}
@@ -54,45 +54,50 @@ export const JobFilters = ({
               </div>
             </div>
 
-            <div className="flex gap-0 md:gap-4">
-              
+            <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <RangeFilter
                   placeholder="Status"
                   options={statusOptions}
                   value={filters.status}
                   onChange={(value) => onFilterChange("status", value)}
+                  className="min-w-24 max-w-40 text-center"
+                />
+
+                {jobRoles && (
+                  <RangeFilter
+                    placeholder="Job Role"
+                    options={[
+                      { value: "all", label: "Any Job Roles" },
+                      ...jobRoles.map((role) => ({
+                        value: role,
+                        label: role,
+                      })),
+                    ]}
+                    value={filters.jobRole}
+                    onChange={(value) => onFilterChange("jobRole", value)}
+                    className="min-w-24 max-w-40"
+                  />
+                )}
+              </div>
+
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <RangeFilter
+                  placeholder="Experience"
+                  options={experienceOptions}
+                  value={filters.experienceRange}
+                  onChange={(value) => onFilterChange("experienceRange", value)}
                   className="min-w-24 max-w-40"
                 />
 
-              {jobRoles && (
                 <RangeFilter
-                  placeholder="Job Role"
-                  options={[
-                    { value: "all", label: "Any Job Roles" },
-                    ...jobRoles.map((role) => ({
-                      value: role,
-                      label: role,
-                    })),
-                  ]}
-                  value={filters.jobRole}
-                  onChange={(value) => onFilterChange("jobRole", value)}
+                  placeholder="Sort By"
+                  options={sortOptions}
+                  value={filters.sortBy}
+                  onChange={(value) => onFilterChange("sortBy", value)}
                   className="min-w-24 max-w-40"
                 />
-              )}
-              <RangeFilter
-                placeholder="Experience"
-                options={experienceOptions}
-                value={filters.experienceRange}
-                onChange={(value) => onFilterChange("experienceRange", value)}
-                className="min-w-24 max-w-40"
-              />
-              <RangeFilter
-                placeholder="Sort By"
-                options={sortOptions}
-                value={filters.sortBy}
-                onChange={(value) => onFilterChange("sortBy", value)}
-                className="min-w-24 max-w-40"
-              />
+              </div>
             </div>
 
             <div className="hidden md:block">
@@ -114,11 +119,11 @@ export const JobFilters = ({
 
 export const AppFilters = ({ filters, onFilterChange, jobRoles, onReset }) => {
   return (
-    <div className="flex mx-auto max-w-5xl items-center">
+    <div className="flex max-w-4xl items-center">
       <div className="w-full space-y-2 dark:bg-gray-900 rounded-lg">
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-2">
+            <div className="flex items-center gap-2">
               <SearchBar
                 placeholder="Search by title, role, designation..."
                 value={filters.searchQuery}
@@ -136,36 +141,40 @@ export const AppFilters = ({ filters, onFilterChange, jobRoles, onReset }) => {
               </div>
             </div>
 
-            <div className="flex gap-0 md:gap-4">
-              {jobRoles && (
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex gap-2 flex-row">
+                {jobRoles && (
+                  <RangeFilter
+                    placeholder="Job Role"
+                    options={[
+                      { value: "all", label: "Any Job Roles" },
+                      ...jobRoles.map((role) => ({
+                        value: role,
+                        label: role,
+                      })),
+                    ]}
+                    value={filters.jobRole}
+                    onChange={(value) => onFilterChange("jobRole", value)}
+                    className="min-w-24 max-w-40"
+                  />
+                )}
                 <RangeFilter
-                  placeholder="Job Role"
-                  options={[
-                    { value: "all", label: "Any Job Roles" },
-                    ...jobRoles.map((role) => ({
-                      value: role,
-                      label: role,
-                    })),
-                  ]}
-                  value={filters.jobRole}
-                  onChange={(value) => onFilterChange("jobRole", value)}
+                  placeholder="Experience"
+                  options={experienceOptions}
+                  value={filters.experienceRange}
+                  onChange={(value) => onFilterChange("experienceRange", value)}
                   className="min-w-24 max-w-40"
                 />
-              )}
-              <RangeFilter
-                placeholder="Experience"
-                options={experienceOptions}
-                value={filters.experienceRange}
-                onChange={(value) => onFilterChange("experienceRange", value)}
-                className="min-w-24 max-w-40"
-              />
-              <RangeFilter
-                placeholder="Sort By"
-                options={sortOptions}
-                value={filters.sortBy}
-                onChange={(value) => onFilterChange("sortBy", value)}
-                className="min-w-24 max-w-40"
-              />
+              </div>
+              <div className="flex gap-2 flex-row justify-center w-fit items-center mx-auto">
+                <RangeFilter
+                  placeholder="Sort By"
+                  options={sortOptions}
+                  value={filters.sortBy}
+                  onChange={(value) => onFilterChange("sortBy", value)}
+                  className="min-w-24 max-w-40"
+                />
+              </div>
             </div>
 
             <div className="hidden md:block">
@@ -187,7 +196,7 @@ export const AppFilters = ({ filters, onFilterChange, jobRoles, onReset }) => {
 
 export const OrgFilters = ({ filters, onFilterChange, onReset }) => {
   return (
-    <div className="flex mx-auto max-w-5xl items-center">
+    <div className="flex max-w-4xl items-center">
       <div className="w-full space-y-2 dark:bg-gray-900 rounded-lg">
         <div className="flex flex-col gap-4">
           <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
@@ -209,7 +218,7 @@ export const OrgFilters = ({ filters, onFilterChange, onReset }) => {
               </div>
             </div>
 
-            <div className="flex gap-0 md:gap-4">
+            <div className="flex gap-2">
               <RangeFilter
                 placeholder="Sort By"
                 options={sortOptions}
@@ -238,11 +247,11 @@ export const OrgFilters = ({ filters, onFilterChange, onReset }) => {
 
 export const UserFilters = ({ filters, onFilterChange, onReset }) => {
   return (
-    <div className="flex mx-auto max-w-5xl items-center">
+    <div className="flex max-w-4xl items-center">
       <div className="w-full space-y-2 dark:bg-gray-900 rounded-lg">
         <div className="flex flex-col gap-4">
-          <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-2">
+            <div className="flex items-center gap-2">
               <SearchBar
                 placeholder="Search by title, role, designation..."
                 value={filters.searchQuery}

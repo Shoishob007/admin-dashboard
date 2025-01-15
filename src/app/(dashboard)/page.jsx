@@ -27,6 +27,7 @@ import {
   DashLineChart,
 } from "./components/Dash-Charts";
 import DashTable from "./components/Dash-Table";
+import { House } from "lucide-react";
 
 ChartJS.register(
   CategoryScale,
@@ -51,11 +52,11 @@ export default function Dashboard() {
 
   return (
     <div>
-      <header className="flex h-16 items-center gap-2">
+      <header className="flex items-center gap-2 p-4">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/"><House className="w-4 h-4" /></BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -67,7 +68,7 @@ export default function Dashboard() {
 
       <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid items-center gap-4 md:gap-0 grid-cols-1 md:grid-cols-3">
         <DashBarChart />
-        <DashDoughnutChart />
+        <DashDoughnutChart className="max-w-[350px] max-h-[350px]"/>
       </div>
 
       <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid grid-cols-1">

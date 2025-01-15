@@ -50,7 +50,7 @@ export function DashDoughnutChart() {
   return (
     <>
       <div
-        className="bg-white rounded-lg max-w-full text-center"
+        className="bg-white rounded-lg max-w-[350px] text-center items-center mx-auto"
         style={{ alignContent: "center" }}
       >
         <h2 className="text-lg font-semibold text-gray-600 text-center">

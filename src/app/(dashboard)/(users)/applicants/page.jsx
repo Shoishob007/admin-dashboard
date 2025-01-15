@@ -15,10 +15,11 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Edit, Trash, Info } from "lucide-react";
+import { Edit, Trash, Info, House } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -26,8 +27,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { filterApplicants, filterJobs } from "@/lib/filters";
-import { AppFilters, JobFilters } from "@/components/filters/JobFilters";
+import { AppFilters } from "../../components/filters/JobFilters";
 import OurPagination from "@/components/Pagination";
+import { DeleteButton, DetailsButton } from "../../components/Buttons";
 
 export default function AllApplicants() {
   const [applicants, setApplicants] = useState([]);
@@ -146,9 +148,13 @@ export default function AllApplicants() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col">
-        <header className="flex h-16 items-center gap-2">
-          <Breadcrumb>
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4">
+          <Breadcrumb className="min-w-24 mt-4 sm:mt-0">
             <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/"><House className="w-4 h-4" /></BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink href="/applicants">
                   All applicants
@@ -156,14 +162,14 @@ export default function AllApplicants() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <AppFilters
+            jobs={applicants}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            jobRoles={getJobRoles()}
+            onReset={handleReset}
+          />
         </header>
-        <AppFilters
-          jobs={applicants}
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          jobRoles={getJobRoles()}
-          onReset={handleReset}
-        />
       </div>
 
       {currentApplicants.length > 0 ? (
@@ -174,14 +180,14 @@ export default function AllApplicants() {
               className="relative shadow-md hover:shadow-lg transition-shadow"
             >
               {/* Avatar and Name */}
-              <div className="flex bg-blue-100 rounded-t-lg items-center justify-between px-2 ">
+              <div className="flex bg-gray-700 text-white rounded-t-lg items-center justify-between px-2 ">
                 <CardHeader className="flex flex-row justify-start items-center space-x-2 py-3 px-0">
                   <Avatar className="h-10 w-10">
                     <AvatarImage
                       src={applicant.applicant.pictureUrl || undefined}
                       alt={applicant.name}
                     />
-                    <AvatarFallback className="bg-white">
+                    <AvatarFallback className="bg-white text-gray-700">
                       {applicant.name?.[0]?.toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -189,7 +195,7 @@ export default function AllApplicants() {
                     <CardTitle className="text-sm font-medium">
                       {applicant.firstName || "Unknown applicant"}
                     </CardTitle>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-200">
                       {applicant.applicant.email}
                     </p>
                   </div>
@@ -197,14 +203,10 @@ export default function AllApplicants() {
                 <div className="py-4">
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200"
-                        >
+                      <TooltipTrigger asChild>
+                        <div className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200 cursor-pointer">
                           <Info className="h-4 w-4" />
-                        </Button>
+                        </div>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>View Details</p>
@@ -217,18 +219,16 @@ export default function AllApplicants() {
               {/* Card Content */}
               <CardContent className="mt-2 text-sm text-gray-700">
                 <div className="flex gap-2">
-                  <p className="font-semibold">Role:</p>
-                  <p className="font-semibold">{applicant.role || "N/A"}</p>
+                  <p className="font-medium">Role:</p>
+                  <p className="font-medium">{applicant.role || "N/A"}</p>
                 </div>
                 <div className="flex gap-2">
-                  <p className="font-semibold">Status:</p>
-                  <p className="font-semibold">
-                    {applicant.status || "Unknown"}
-                  </p>
+                  <p className="font-medium">Status:</p>
+                  <p className="font-medium">{applicant.status || "Unknown"}</p>
                 </div>
                 <div className="flex gap-2">
-                  <p className="font-semibold">Contact:</p>
-                  <p className="font-semibold">
+                  <p className="font-medium">Contact:</p>
+                  <p className="font-medium">
                     {applicant.contactInfo || "N/A"}
                   </p>
                 </div>
@@ -236,26 +236,14 @@ export default function AllApplicants() {
 
               {/* Actions */}
               <CardFooter className="flex justify-between items-center text-gray-700 px-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="p-2 hover:bg-blue-100 border border-blue-300"
-                >
-                  {/* <Edit className="h-4 w-4" /> */} Edit Details
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="p-2 hover:bg-red-100 border border-red-300"
-                >
-                  {/* <Trash className="h-4 w-4" /> */} Delete Applicant
-                </Button>
+                <DetailsButton />
+                <DeleteButton user={"Applicant"} />
               </CardFooter>
             </Card>
           ))}
         </div>
       ) : (
-        <div className="text-center text-gray-500">
+        <div className="text-center text-gray-600">
           No applicants match your filters.
         </div>
       )}

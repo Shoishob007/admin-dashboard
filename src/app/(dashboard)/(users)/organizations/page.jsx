@@ -15,10 +15,10 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Edit, Trash, Info } from "lucide-react";
+import { Edit, Trash, Info, House } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -26,8 +26,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { filterOrganizations } from "@/lib/filters";
-import { OrgFilters } from "@/components/filters/JobFilters";
 import OurPagination from "@/components/Pagination";
+import { DeleteButton, DetailsButton } from "../../components/Buttons";
+import { OrgFilters } from "../../components/filters/JobFilters";
 
 export default function AllOrganizations() {
   const [organizations, setOrganizations] = useState([]);
@@ -130,9 +131,13 @@ export default function AllOrganizations() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col ">
-        <header className="flex h-16 items-center gap-2">
-          <Breadcrumb>
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4">
+          <Breadcrumb className="min-w-24 mt-4 sm:mt-0">
             <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/"><House className="w-4 h-4" /></BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink href="/organizations">
                   All organizations
@@ -140,12 +145,12 @@ export default function AllOrganizations() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <OrgFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onReset={handleReset}
+          />
         </header>
-        <OrgFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onReset={handleReset}
-        />
       </div>
 
       {currentOrganizations.length > 0 ? (
@@ -156,7 +161,7 @@ export default function AllOrganizations() {
               className="relative shadow-md hover:shadow-lg transition-shadow"
             >
               {/* Avatar and Name */}
-              <div className="flex bg-emerald-100 rounded-t-lg items-center justify-between px-2">
+              <div className="flex bg-gray-700 text-white rounded-t-lg items-center justify-between px-2">
                 <CardHeader className="flex flex-row justify-start items-center space-x-2 py-3 px-0">
                   <Avatar className="h-10 w-10">
                     <AvatarImage
@@ -164,7 +169,7 @@ export default function AllOrganizations() {
                       alt={org.orgName}
                     />
 
-                    <AvatarFallback className="bg-white">
+                    <AvatarFallback className="bg-white text-gray-700">
                       {org.orgName?.[0]?.toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -172,7 +177,7 @@ export default function AllOrganizations() {
                     <CardTitle className="text-sm font-medium">
                       {org.orgName || "Unknown organization"}
                     </CardTitle>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-200">
                       {org.organization.email}
                     </p>
                   </div>
@@ -180,14 +185,10 @@ export default function AllOrganizations() {
                 <div className="py-4">
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200"
-                        >
+                      <TooltipTrigger asChild>
+                        <div className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200 cursor-pointer">
                           <Info className="h-4 w-4" />
-                        </Button>
+                        </div>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>View Details</p>
@@ -200,43 +201,31 @@ export default function AllOrganizations() {
               {/* Card Content */}
               <CardContent className="mt-2 text-sm text-gray-700">
                 <div className="flex gap-2">
-                  <p className="font-semibold">Established:</p>
-                  <p className="font-semibold">
+                  <p className="font-medium">Established:</p>
+                  <p className="font-medium">
                     {org.orgEstablishedYear || "N/A"}
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <p className="font-semibold">Phone:</p>
-                  <p className="font-semibold">{org.orgPhone || "Unknown"}</p>
+                  <p className="font-medium">Phone:</p>
+                  <p className="font-medium">{org.orgPhone || "Unknown"}</p>
                 </div>
                 <div className="flex gap-2">
-                  <p className="font-semibold">Address:</p>
-                  <p className="font-semibold">{org.orgAddress || "N/A"}</p>
+                  <p className="font-medium">Address:</p>
+                  <p className="font-medium">{org.orgAddress || "N/A"}</p>
                 </div>
               </CardContent>
 
               {/* Actions */}
               <CardFooter className="flex justify-between items-center text-gray-700 px-3 ">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="p-2 hover:bg-emerald-100 border border-emerald-300"
-                >
-                  {/* <Edit className="h-4 w-4" /> */} Edit Details
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="p-2 hover:bg-red-100 border border-red-300"
-                >
-                  {/* <Trash className="h-4 w-4" /> */} Delete Organization
-                </Button>
+                <DetailsButton />
+                <DeleteButton user={"Organization"} />
               </CardFooter>
             </Card>
           ))}
         </div>
       ) : (
-        <div className="text-center text-gray-500">
+        <div className="text-center text-gray-600">
           No organization match your filters.
         </div>
       )}

@@ -47,7 +47,7 @@ const VerticalNavbar = () => {
             </li>
           </div>
           {
-            <>
+            <div className="sm:flex space-x-4 items-center hidden">
               <li>
                 <Link href="/" className={cn("hover:underline")}>
                   Home
@@ -73,7 +73,7 @@ const VerticalNavbar = () => {
                   Contact Us
                 </Link>
               </li> */}
-            </>
+            </div>
           }
         </ul>
       </div>

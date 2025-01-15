@@ -15,19 +15,21 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Edit, Trash, Info } from "lucide-react";
+import { Edit, Trash, Info, House } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { UserFilters } from "@/components/filters/JobFilters";
-import { filterJobs, filterUsers } from "@/lib/filters";
+import { filterUsers } from "@/lib/filters";
 import OurPagination from "@/components/Pagination";
+import { DeleteButton, DetailsButton } from "../../components/Buttons";
+import { UserFilters } from "../../components/filters/JobFilters";
 
 export default function AllUsers() {
   const [users, setUsers] = useState([]);
@@ -85,7 +87,6 @@ export default function AllUsers() {
 
     fetchUsers();
   }, [status, session?.access_token]);
-  
 
   const filteredUsers = filterUsers(users, filters);
 
@@ -122,20 +123,24 @@ export default function AllUsers() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col">
-        <header className="flex h-16 items-center gap-2">
-          <Breadcrumb>
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4">
+          <Breadcrumb className="min-w-24 mt-4 sm:mt-0">
             <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/"><House className="w-4 h-4" /></BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbLink href="/all-users">All users</BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <UserFilters
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onReset={handleReset}
+          />
         </header>
-        <UserFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onReset={handleReset}
-        />
       </div>
       {currentUsers.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 rounded-lg">
@@ -145,11 +150,11 @@ export default function AllUsers() {
               className="relative shadow-md hover:shadow-lg transition-shadow"
             >
               {/* Avatar and Name */}
-              <div className="flex bg-violet-100 rounded-t-lg items-center justify-between px-2">
+              <div className="flex bg-gray-700 text-white rounded-t-lg items-center justify-between px-2">
                 <CardHeader className="flex flex-row justify-start items-center space-x-2 py-3 px-0">
                   <Avatar className="h-10 w-10">
                     <AvatarImage src={user.pictureUrl || undefined} />
-                    <AvatarFallback className="bg-white">
+                    <AvatarFallback className="bg-white text-gray-700">
                       {user.name?.[0]?.toUpperCase() || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -157,23 +162,18 @@ export default function AllUsers() {
                     <CardTitle className="text-sm font-medium">
                       {user.name || "Unknown user"}
                     </CardTitle>
-                    <p className="text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
+                    <p className="text-xs text-gray-200">{user.email}</p>
                   </div>
                 </CardHeader>
                 <div className="py-4">
                   <TooltipProvider>
                     <Tooltip>
-                      <TooltipTrigger>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200"
-                        >
+                      <TooltipTrigger asChild>
+                        <div className="p-2 hover:bg-transparent hover:scale-110 transition-all duration-200 cursor-pointer">
                           <Info className="h-4 w-4" />
-                        </Button>
+                        </div>
                       </TooltipTrigger>
+
                       <TooltipContent>
                         <p>View Details</p>
                       </TooltipContent>
@@ -185,35 +185,23 @@ export default function AllUsers() {
               {/* Card Content */}
               <CardContent className="mt-2 text-sm text-gray-700">
                 <div className="flex gap-2">
-                  <p className="font-semibold">Role:</p>
-                  <p className="font-semibold">{user.role || "N/A"}</p>
+                  <p className="font-medium">Role:</p>
+                  <p className="font-medium">{user.role || "N/A"}</p>
                 </div>
                 <div className="flex gap-2">
-                  <p className="font-semibold">Status:</p>
-                  <p className="font-semibold">{user.status || "Unknown"}</p>
+                  <p className="font-medium">Status:</p>
+                  <p className="font-medium">{user.status || "Unknown"}</p>
                 </div>
                 <div className="flex gap-2">
-                  <p className="font-semibold">Contact:</p>
-                  <p className="font-semibold">{user.contactInfo || "N/A"}</p>
+                  <p className="font-medium">Contact:</p>
+                  <p className="font-medium">{user.contactInfo || "N/A"}</p>
                 </div>
               </CardContent>
 
               {/* Actions */}
               <CardFooter className="flex justify-between items-center text-gray-700 px-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="p-2 hover:bg-violet-100 border border-violet-300"
-                >
-                  {/* <Edit className="h-4 w-4" /> */} Edit Details
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="p-2 hover:bg-red-100 border border-red-300"
-                >
-                  {/* <Trash className="h-4 w-4" /> */} Delete User
-                </Button>
+                <DetailsButton />
+                <DeleteButton user={"User"} />
               </CardFooter>
             </Card>
           ))}
