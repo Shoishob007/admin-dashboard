@@ -4,7 +4,7 @@ import React from "react";
 import { SearchBar } from "./SearchBar";
 import { RangeFilter } from "./RangeFilters";
 import { Button } from "@/components/ui/button";
-import { Plus, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 
 const statusOptions = [
   { label: "Any Status", value: "all" },
@@ -25,7 +25,6 @@ const sortOptions = [
 ];
 
 export const JobFilters = ({
-  jobs,
   filters,
   onFilterChange,
   jobRoles,

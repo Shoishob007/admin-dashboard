@@ -39,35 +39,35 @@ const data = [
     id: "m5gr84i9",
     amount: 316,
     status: "success",
-    name:"Ken",
+    name: "Ken",
     email: "ken99@yahoo.com",
   },
   {
     id: "3u1reuv4",
     amount: 242,
     status: "success",
-    name:"Abdul Halim",
+    name: "Abdul Halim",
     email: "Abe45@gmail.com",
   },
   {
     id: "derv1ws0",
     amount: 837,
     status: "processing",
-    name:"Monserrat",
+    name: "Monserrat",
     email: "Monserrat44@gmail.com",
   },
   {
     id: "5kma53ae",
     amount: 874,
     status: "success",
-    name:"Silas",
+    name: "Silas",
     email: "Silas22@gmail.com",
   },
   {
     id: "bhqecj4p",
     amount: 721,
     status: "failed",
-    name:"Carmella",
+    name: "Carmella",
     email: "carmella@hotmail.com",
   },
 ];
@@ -123,10 +123,9 @@ export const columns = [
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("amount"));
 
-      // Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "USD",
+        currency: "BDT",
       }).format(amount);
 
       return <div className="text-right font-medium">{formatted}</div>;
@@ -176,6 +175,11 @@ export default function DashTable() {
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 7,
+      },
+    },
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,

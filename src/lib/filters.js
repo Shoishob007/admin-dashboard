@@ -5,16 +5,17 @@ export const isJobActive = (status) => {
 export const matchesSearchQuery = (searchQuery, job) => {
     const searchLower = searchQuery.toLowerCase();
     return (
-        job.title?.toLowerCase().includes(searchLower) ||
-        job.jobRole?.[0]?.title?.toLowerCase().includes(searchLower) ||
-        job.designation?.title?.toLowerCase().includes(searchLower) ||
-        job.job?.organization?.orgName?.toLowerCase().includes(searchLower)
+        job?.title?.toLowerCase().includes(searchLower) ||
+        job?.jobRole?.[0]?.title?.toLowerCase().includes(searchLower) ||
+        job?.designation?.title?.toLowerCase().includes(searchLower) ||
+        job?.job?.organization?.orgName?.toLowerCase().includes(searchLower)
     );
 };
 
 export const matchesUsersSearchQuery = (searchQuery, user) => {
     const searchLower = searchQuery.toLowerCase();
     return (
+        user?.id.toLowerCase().includes(searchLower) || 
         user?.role.toLowerCase().includes(searchLower) ||
         user?.email.toLowerCase().includes(searchLower)
     );
@@ -23,10 +24,10 @@ export const matchesUsersSearchQuery = (searchQuery, user) => {
 export const matchesOrganizationsSearchQuery = (searchQuery, org) => {
     const searchLower = searchQuery.toLowerCase();
     return (
+        org?.id?.toLowerCase().includes(searchLower) || 
         org?.orgName?.toLowerCase().includes(searchLower) ||
         org?.orgAddress?.toLowerCase().includes(searchLower) ||
         org?.orgPhone?.toLowerCase().includes(searchLower) ||
-        org?.orgEstablishedYear?.toLowerCase().includes(searchLower) ||
         org?.organization?.email?.toLowerCase().includes(searchLower)
     );
 };
@@ -34,14 +35,15 @@ export const matchesOrganizationsSearchQuery = (searchQuery, org) => {
 export const matchesApplicantsSearchQuery = (searchQuery, applicant) => {
     const searchLower = searchQuery.toLowerCase();
     return (
-        applicant.name?.toLowerCase().includes(searchLower) ||
-        applicant.applicant?.email?.toLowerCase().includes(searchLower) ||
-        applicant.jobRole?.title?.toLowerCase().includes(searchLower) ||
-        applicant.contactInfo?.toLowerCase().includes(searchLower) ||
-        applicant.designation?.title?.toLowerCase().includes(searchLower) ||
-        applicant.educations?.instituteName?.toLowerCase().includes(searchLower) || 
-        applicant.educations?.fieldOfStudy?.title?.toLowerCase().includes(searchLower) ||
-        applicant.educations?.degreeLevel?.title?.toLowerCase().includes(searchLower)
+        applicant?.id.toLowerCase().includes(searchLower) ||
+        applicant?.name?.toLowerCase().includes(searchLower) ||
+        applicant?.applicant?.email?.toLowerCase().includes(searchLower) ||
+        applicant?.jobRole?.title?.toLowerCase().includes(searchLower) ||
+        applicant?.contactInfo?.toLowerCase().includes(searchLower) ||
+        applicant?.designation?.title?.toLowerCase().includes(searchLower) ||
+        applicant?.educations?.instituteName?.toLowerCase().includes(searchLower) || 
+        applicant?.educations?.fieldOfStudy?.title?.toLowerCase().includes(searchLower) ||
+        applicant?.educations?.degreeLevel?.title?.toLowerCase().includes(searchLower)
     );
 };
 
