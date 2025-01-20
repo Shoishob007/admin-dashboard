@@ -1,4 +1,3 @@
-// components/UserTable.js
 import React from "react";
 import {
   Table,
@@ -24,17 +23,16 @@ const UserTable = ({
   currentPaginationPage,
   setCurrentPaginationPage,
   handleRowClick,
+  isJobTable = false,
 }) => {
   const filteredUsers = (() => {
     if (users.some((user) => user.hasOwnProperty("applicant"))) {
       return filterApplicants(users, filters);
     } else if (users.some((user) => user.hasOwnProperty("organization"))) {
       return filterOrganizations(users, filters);
-    }
-    else if (users.some((user) => user.hasOwnProperty("job"))) {
-        return filterJobs(users, filters);
-      }
-     else {
+    } else if (users.some((user) => user.hasOwnProperty("job"))) {
+      return filterJobs(users, filters);
+    } else {
       return filterUsers(users, filters);
     }
   })();
@@ -55,8 +53,17 @@ const UserTable = ({
       <Table className="w-full bg-white dark:bg-gray-800 dark:text-gray-300">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-2/5">User ID</TableHead>
-            <TableHead className="w-1/3">User Email</TableHead>
+            {isJobTable ? (
+              <TableHead className="w-2/5">Job ID</TableHead>
+            ) : (
+              <TableHead className="w-2/5">User ID</TableHead>
+            )}
+
+            {isJobTable ? (
+              <TableHead className="w-1/3">Job Title</TableHead>
+            ) : (
+              <TableHead className="w-1/3">User Email</TableHead>
+            )}
             <TableHead>Role</TableHead>
             <TableHead>Status</TableHead>
           </TableRow>
@@ -70,29 +77,83 @@ const UserTable = ({
             >
               <TableCell className="flex items-center gap-2">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={user?.pictureUrl || user.applicant?.pictureUrl || user.organization?.pictureUrl || undefined} />
+                  <AvatarImage
+                    src={
+                      user?.pictureUrl ||
+                      user.applicant?.pictureUrl ||
+                      user.organization?.pictureUrl ||
+                      user.job?.organization?.img?.url ||
+                      undefined
+                    }
+                  />
                   <AvatarFallback>
-                    {user?.name?.[0]?.toUpperCase() || user.orgName?.[0]?.toUpperCase() || "U"}
+                    {user?.name?.[0]?.toUpperCase() ||
+                      user.orgName?.[0]?.toUpperCase() ||
+                      "U"}
                   </AvatarFallback>
                 </Avatar>
                 <span>{user.id || "Unknown User"}</span>
               </TableCell>
-              <TableCell>{user.email || user.applicant?.email || user.organization?.email}</TableCell>
-              <TableCell>{user.role || user.applicant?.role || user.organization?.role || "N/A"}</TableCell>
-              <TableCell>
-                <Badge
-                  variant="outline"
-                  className={
-                    user._verified || user.applicant?._verified || user.organization?._verified
-                      ? "bg-green-100 text-green-800 hover:!bg-none"
-                      : "bg-gray-100 text-gray-800"
-                  }
-                >
-                  {user?._verified || user.applicant?._verified || user.organization?._verified
-                    ? "Verified"
-                    : "Not Verified"}
-                </Badge>
-              </TableCell>
+              {isJobTable ? (
+                // <TableCell>
+                //   {user.jobRole?.map((role) => role.title).join(", ")}
+                // </TableCell>
+                <TableCell>{user.title || "N/A"}</TableCell>
+              ) : (
+                <TableCell>
+                  {user.email ||
+                    user.applicant?.email ||
+                    user.organization?.email}
+                </TableCell>
+              )}
+
+              {isJobTable ? (
+                <TableCell>
+                  {user.jobRole?.map((role) => role.title).join(", ") || "N/A"}
+                </TableCell>
+              ) : (
+                <TableCell>
+                  {user.role ||
+                    user.applicant?.role ||
+                    user.organization?.role ||
+                    "N/A"}
+                </TableCell>
+              )}
+              {isJobTable ? (
+                <TableCell>
+                  <Badge
+                    variant="outline"
+                    className={
+                      new Date(user.deadline) > new Date()
+                        ? "bg-green-100 text-green-800 hover:!bg-none"
+                        : "bg-gray-100 text-gray-800"
+                    }
+                  >
+                    {new Date(user.deadline) > new Date()
+                      ? "Active"
+                      : "Inactive"}
+                  </Badge>
+                </TableCell>
+              ) : (
+                <TableCell>
+                  <Badge
+                    variant="outline"
+                    className={
+                      user._verified ||
+                      user.applicant?._verified ||
+                      user.organization?._verified
+                        ? "bg-green-100 text-green-800 hover:!bg-none"
+                        : "bg-gray-100 text-gray-800"
+                    }
+                  >
+                    {user?._verified ||
+                    user.applicant?._verified ||
+                    user.organization?._verified
+                      ? "Verified"
+                      : "Not Verified"}
+                  </Badge>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

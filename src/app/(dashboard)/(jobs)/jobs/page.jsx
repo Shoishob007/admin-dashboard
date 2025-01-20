@@ -201,6 +201,7 @@ const [isSheetOpen, setIsSheetOpen] = useState(false);
         currentPaginationPage={currentPaginationPage}
         setCurrentPaginationPage={setCurrentPaginationPage}
         handleRowClick={handleRowClick}
+        isJobTable={true}
       />
 
       {/* Sheet for Job Details */}
