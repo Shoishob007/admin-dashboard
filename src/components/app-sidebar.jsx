@@ -11,6 +11,7 @@ import {
   GalleryVerticalEnd,
   Info,
   Map,
+  MessageCircleQuestion,
   PieChart,
   Settings2,
   SquareTerminal,
@@ -138,6 +139,11 @@ const data = {
           url: "/global-setup/academicActivity",
         },
       ],
+    },
+    {
+      title: "FAQs",
+      url: "/faqs",
+      icon: MessageCircleQuestion,
     },
     {
       title: "Settings",
