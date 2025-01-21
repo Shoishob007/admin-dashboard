@@ -9,6 +9,13 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import OurPagination from "@/components/Pagination";
 import {
   filterApplicants,
@@ -16,6 +23,8 @@ import {
   filterOrganizations,
   filterUsers,
 } from "@/lib/filters";
+import { EllipsisVertical } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const UserTable = ({
   users,
@@ -25,6 +34,8 @@ const UserTable = ({
   handleRowClick,
   isJobTable = false,
 }) => {
+  const router = useRouter();
+
   const filteredUsers = (() => {
     if (users.some((user) => user.hasOwnProperty("applicant"))) {
       return filterApplicants(users, filters);
@@ -46,26 +57,33 @@ const UserTable = ({
   const startIndex = (currentPaginationPage - 1) * 20;
   const currentUsers = sortedUsers.slice(startIndex, startIndex + 20);
 
-  console.log(currentUsers);
-
   return (
     <div className="">
-      <Table className="w-full bg-white dark:bg-gray-800 dark:text-gray-300">
-        <TableHeader>
+      <Table className="w-full bg-white dark:bg-gray-800 dark:text-gray-300 text-center rounded-lg shadow-lg">
+        <TableHeader className="">
           <TableRow>
             {isJobTable ? (
-              <TableHead className="w-2/5">Job ID</TableHead>
+              <TableHead className="w-2/6 text-center font-semibold">
+                Job ID
+              </TableHead>
             ) : (
-              <TableHead className="w-2/5">User ID</TableHead>
+              <TableHead className="w-2/6 text-center font-semibold">
+                User ID
+              </TableHead>
             )}
 
             {isJobTable ? (
-              <TableHead className="w-1/3">Job Title</TableHead>
+              <TableHead className="text-center font-semibold">
+                Job Title
+              </TableHead>
             ) : (
-              <TableHead className="w-1/3">User Email</TableHead>
+              <TableHead className="text-center font-semibold">
+                User Email
+              </TableHead>
             )}
-            <TableHead>Role</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead className="text-center font-semibold">Role</TableHead>
+            <TableHead className="text-center font-semibold">Status</TableHead>
+            <TableHead className="text-center font-semibold">Action</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -92,12 +110,13 @@ const UserTable = ({
                       "U"}
                   </AvatarFallback>
                 </Avatar>
-                <span>{user.id || "Unknown User"}</span>
+                {isJobTable ? (
+                  <span>{user?.job?.id || "Unknown Job"}</span>
+                ) : (
+                  <span>{user.id || "Unknown User"}</span>
+                )}
               </TableCell>
               {isJobTable ? (
-                // <TableCell>
-                //   {user.jobRole?.map((role) => role.title).join(", ")}
-                // </TableCell>
                 <TableCell>{user.title || "N/A"}</TableCell>
               ) : (
                 <TableCell>
@@ -108,7 +127,7 @@ const UserTable = ({
               )}
 
               {isJobTable ? (
-                <TableCell>
+                <TableCell className="text-sm">
                   {user.jobRole?.map((role) => role.title).join(", ") || "N/A"}
                 </TableCell>
               ) : (
@@ -154,6 +173,67 @@ const UserTable = ({
                   </Badge>
                 </TableCell>
               )}
+
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <EllipsisVertical className="size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  {isJobTable ? (
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/job-applications/${user?.job.id}`);
+                        }}
+                      >
+                        View Applications
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log("Edit Job", user?.job.id);
+                        }}
+                      >
+                        Edit Job
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log("Delete Job", user?.job.id);
+                        }}
+                      >
+                        Delete Job
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  ) : (
+                    <DropdownMenuContent>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log("Edit Job", user?.id);
+                        }}
+                      >
+                        Edit User
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log("Delete Job", user?.id);
+                        }}
+                      >
+                        Delete User
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  )}
+                </DropdownMenu>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

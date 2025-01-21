@@ -47,9 +47,6 @@ const JobSheet = ({ selectedJobDetails, isSheetOpen, setIsSheetOpen }) => {
             <div className="space-y-2">
               <h3 className="text-base font-semibold">Job Information</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Description: {selectedJobDetails?.description}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Salary: {selectedJobDetails?.salary}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -89,7 +86,7 @@ const JobSheet = ({ selectedJobDetails, isSheetOpen, setIsSheetOpen }) => {
             {/* Job Roles */}
             <div className="space-y-2 mt-2">
               <h3 className="text-base font-semibold">Job Roles</h3>
-              <ul className="list-disc ml-4 space-y-1">
+              <ul className="list-disc ml-4 space-y-1 text-sm">
                 {selectedJobDetails?.jobRole?.map((role, index) => (
                   <li key={index}>{role.title}</li>
                 ))}
@@ -99,7 +96,7 @@ const JobSheet = ({ selectedJobDetails, isSheetOpen, setIsSheetOpen }) => {
             {/* Skills */}
             <div className="space-y-2 mt-2">
               <h3 className="text-base font-semibold">Required Skills</h3>
-              <ul className="list-disc ml-4 space-y-1">
+              <ul className="list-disc ml-4 space-y-1 text-sm">
                 {selectedJobDetails?.skills?.map((skill, index) => (
                   <li key={index}>{skill.title}</li>
                 ))}
@@ -108,8 +105,8 @@ const JobSheet = ({ selectedJobDetails, isSheetOpen, setIsSheetOpen }) => {
 
             {/* Degree Level */}
             <div className="space-y-2 mt-2">
-              <h3 className="text-base font-semibold">Degree Level</h3>
-              <ul className="list-disc ml-4 space-y-1">
+              <h3 className="text-base font-semibold">Required Degree Level</h3>
+              <ul className="list-disc ml-4 space-y-1 text-sm">
                 {selectedJobDetails?.degreeLevel?.map((degree, index) => (
                   <li key={index}>{degree.title}</li>
                 ))}
@@ -118,8 +115,8 @@ const JobSheet = ({ selectedJobDetails, isSheetOpen, setIsSheetOpen }) => {
 
             {/* Field of Study */}
             <div className="space-y-2 mt-2">
-              <h3 className="text-base font-semibold">Field of Study</h3>
-              <ul className="list-disc ml-4 space-y-1">
+              <h3 className="text-base font-semibold">Required Field of Study</h3>
+              <ul className="list-disc ml-4 space-y-1 text-sm">
                 {selectedJobDetails?.fieldOfStudy?.map((field, index) => (
                   <li key={index}>{field?.title}</li>
                 ))}
@@ -145,7 +142,7 @@ const JobSheet = ({ selectedJobDetails, isSheetOpen, setIsSheetOpen }) => {
               0 && (
               <div className="space-y-1 mt-2">
                 <h3 className="text-base font-semibold">Social Links</h3>
-                <ul className="list-disc ml-4 space-y-1">
+                <ul className="list-disc ml-4 space-y-1 text-sm">
                   {selectedJobDetails?.job?.organization?.socialLinks.map(
                     (link, index) => (
                       <li key={index}>
