@@ -6,6 +6,31 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+@keyframes rotate-in {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(720deg);
+  }
+  100% {
+    transform: rotate(45deg);
+  }
+}
+
+@keyframes rotate-out {
+  0% {
+    transform: rotate(45deg);
+  }
+  50% {
+    transform: rotate(-720deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;

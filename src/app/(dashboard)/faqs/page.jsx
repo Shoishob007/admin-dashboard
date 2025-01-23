@@ -18,15 +18,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import FloatingActionButton from "@/components/ui/floatingButton";
-import { House, Plus, X } from "lucide-react";
+import { CircleHelp, House, Plus, X } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { Badge } from "@/components/ui/badge";
+import LoadingSkeleton from "./components/LoadingSkeleton";
 
 const FAQs = () => {
   const [faqs, setFaqs] = useState([]);
   const [newQuestion, setNewQuestion] = useState("");
   const [newAnswer, setNewAnswer] = useState("");
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingId, setEditingId] = useState(null);
+  const [editingQuestion, setEditingQuestion] = useState("");
+  const [editingAnswer, setEditingAnswer] = useState("");
   const [isInputVisible, setIsInputVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { data: session, status } = useSession();
 
@@ -41,7 +46,6 @@ const FAQs = () => {
             },
           }
         );
-        if (!response.ok) throw new Error("Failed to fetch FAQs");
         const data = await response.json();
         console.log("Fetched FAQS::", data);
         setFaqs(data.docs);
@@ -51,11 +55,13 @@ const FAQs = () => {
           description: error.message,
           variant: "ourDestructive",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchFAQs();
-  }, []);
+  }, [session?.access_token]);
 
   const handleAddFAQ = async () => {
     if (!newQuestion || !newAnswer) {
@@ -79,14 +85,12 @@ const FAQs = () => {
         }
       );
 
-      console.log(newQuestion, newAnswer)
-
-    
       if (!response.ok) throw new Error("Failed to add FAQ");
-      const newFAQ = await response.json();
-      setFaqs([...faqs, newFAQ]);
+      const { doc: newFAQ } = await response.json();
+      setFaqs((prevFaqs) => [...prevFaqs, newFAQ]);
       setNewQuestion("");
       setNewAnswer("");
+      setIsInputVisible(false);
       toast({
         title: "Success",
         description: "FAQ added successfully!",
@@ -101,38 +105,51 @@ const FAQs = () => {
     }
   };
 
-  const handleEditFAQ = (index) => {
-    const faqToEdit = faqs[index];
-    setNewQuestion(faqToEdit.question);
-    setNewAnswer(faqToEdit.answer);
-    setEditingIndex(index);
+  const handleEditFAQ = (id) => {
+    const faqToEdit = faqs.find((faq) => faq.id === id);
+    setEditingQuestion(faqToEdit.question);
+    setEditingAnswer(faqToEdit.answer);
+    setEditingId(id);
   };
 
   const handleUpdateFAQ = async () => {
-    if (editingIndex === null) return;
+    if (!editingId) return;
 
     try {
-      const updatedFAQData = { question: newQuestion, answer: newAnswer };
+      const updatedFAQData = {
+        question: editingQuestion.trim(),
+        answer: editingAnswer.trim(),
+      };
+
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/faqs/${faqs[editingIndex].id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/faqs/${editingId}`,
         {
           method: "PATCH",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${session?.access_token}`,
           },
           body: JSON.stringify(updatedFAQData),
         }
       );
-      if (!response.ok) throw new Error("Failed to update FAQ");
 
-      const updatedFaqs = faqs.map((faq, index) =>
-        index === editingIndex ? updatedFAQData : faq
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update FAQ");
+      }
+
+      const { doc: updatedFAQ } = await response.json();
+
+      setFaqs((prevFaqs) =>
+        prevFaqs.map((faq) =>
+          faq.id === editingId ? { ...faq, ...updatedFAQ } : faq
+        )
       );
 
-      setFaqs(updatedFaqs);
-      setNewQuestion("");
-      setNewAnswer("");
-      setEditingIndex(null);
+      setEditingQuestion("");
+      setEditingAnswer("");
+      setEditingId(null);
+
       toast({
         title: "Success",
         description: "FAQ updated successfully!",
@@ -148,7 +165,6 @@ const FAQs = () => {
   };
 
   const handleDeleteFAQ = async (id) => {
-    console.log(id)
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/faqs/${id}`,
@@ -159,9 +175,10 @@ const FAQs = () => {
           },
         }
       );
+
       if (!response.ok) throw new Error("Failed to delete FAQ");
 
-      const updatedFaqs = faqs.filter((_, i) => i !== index);
+      const updatedFaqs = faqs.filter((faq) => faq.id !== id);
       setFaqs(updatedFaqs);
       toast({
         title: "Success",
@@ -182,7 +199,6 @@ const FAQs = () => {
     if (isInputVisible) {
       setNewQuestion("");
       setNewAnswer("");
-      setEditingIndex(null);
     }
   };
 
@@ -205,47 +221,92 @@ const FAQs = () => {
       </header>
 
       <div className="container mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
-        <h1 className="text-xl text-center font-bold mb-4">Frequently Asked Questions</h1>
+        <div className="flex items-center gap-1 mx-auto justify-center">
+          <Badge
+            variant="secondary"
+            className={"flex items-center gap-1 font-medium"}
+          >
+            <CircleHelp className="size-3" />
+            FAQs
+          </Badge>
+        </div>
+        <h1 className="text-xl text-center font-bold mt-2 mb-4">
+          Frequently Asked Questions
+        </h1>
+        {isLoading ? (
+          <LoadingSkeleton />
+        ) : (
+          <Accordion type="single" collapsible>
+            {faqs?.map((faq) => (
+              <AccordionItem key={faq.id} value={`faq-${faq.id}`}>
+                <AccordionTrigger className="bg-white hover:bg-gray-100 transition duration-200 rounded-md p-3">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="p-4 bg-white border border-gray-200 rounded-md shadow-md">
+                  {editingId === faq.id ? (
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Question"
+                        value={editingQuestion}
+                        onChange={(e) => setEditingQuestion(e.target.value)}
+                      />
+                      <Input
+                        placeholder="Answer"
+                        value={editingAnswer}
+                        onChange={(e) => setEditingAnswer(e.target.value)}
+                      />
+                      <div className="flex justify-end items-center gap-2">
+                        <Button
+                          size="xs"
+                          className="border border-emerald-400 bg-emerald-100 hover:bg-emerald-100 hover:text-emerald-500 text-emerald-500 text-xs min-w-16"
+                          onClick={handleUpdateFAQ}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          className="border border-blue-400 bg-blue-100 hover:bg-blue-100 hover:text-blue-500 text-blue-500 text-xs min-w-16"
+                          onClick={() => setEditingId(null)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between">
+                      <p>{faq.answer}</p>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          className="border border-blue-400 bg-blue-100 hover:bg-blue-100 hover:text-blue-500 text-blue-500 text-xs min-w-16"
+                          onClick={() => handleEditFAQ(faq.id)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          className="border border-red-400 bg-red-100 hover:bg-red-100 hover:text-red-500 text-red-500 text-xs min-w-16"
+                          onClick={() => handleDeleteFAQ(faq.id)}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        )}
 
-        <Accordion type="single" collapsible>
-          {faqs.map((faq, index) => (
-            <AccordionItem key={faq.id} value={`faq-${index}`}>
-              <AccordionTrigger className="bg-white hover:bg-gray-100 transition duration-200 rounded-md p-3">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="p-4 bg-white border border-gray-200 rounded-md shadow-md">
-                <div className="flex justify-between">
-                  <p>{faq.answer}</p>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => handleEditFAQ(index)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleDeleteFAQ(faq.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        <FloatingActionButton
+          onClick={toggleInputVisibility}
+          isInputVisible={isInputVisible}
+        />
 
-        {/* Floating Action Button */}
-        <FloatingActionButton onClick={toggleInputVisibility}>
-          {isInputVisible ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Plus className="w-6 h-6" />
-          )}
-        </FloatingActionButton>
-
-        {/* Input Fields for Adding/Editing FAQ */}
         <div
           className={`mt-4 transition-all duration-300 ease-in-out ${
             isInputVisible
@@ -265,11 +326,7 @@ const FAQs = () => {
             onChange={(e) => setNewAnswer(e.target.value)}
             className="mb-2"
           />
-          <Button
-            onClick={editingIndex !== null ? handleUpdateFAQ : handleAddFAQ}
-          >
-            {editingIndex !== null ? "Update FAQ" : "Add FAQ"}
-          </Button>
+          <Button onClick={handleAddFAQ}>Add FAQ</Button>
         </div>
       </div>
     </>
