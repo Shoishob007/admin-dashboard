@@ -7,6 +7,7 @@ import {
   Bot,
   BriefcaseBusiness,
   Command,
+  FileText,
   Frame,
   GalleryVerticalEnd,
   Info,
@@ -144,6 +145,11 @@ const data = {
       title: "FAQs",
       url: "/faqs",
       icon: MessageCircleQuestion,
+    },
+    {
+      title:"Terms & Conditions",
+      url:"/terms-and-conditions",
+      icon: FileText
     },
     {
       title: "Settings",

@@ -1,12 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { useSession } from "next-auth/react";
+import React, { useEffect, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -18,28 +13,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import FloatingActionButton from "@/components/ui/floatingButton";
-import { CircleHelp, House, Edit, Trash } from "lucide-react"; // Import icons
-import { useSession } from "next-auth/react";
-import { Badge } from "@/components/ui/badge";
-import LoadingSkeleton from "./components/LoadingSkeleton";
+import { House, Edit, Trash } from "lucide-react";
+import LoadingSkeleton from "../faqs/components/LoadingSkeleton";
 
-const FAQs = () => {
-  const [faqs, setFaqs] = useState([]);
-  const [newQuestion, setNewQuestion] = useState("");
-  const [newAnswer, setNewAnswer] = useState("");
+const TermsAndConditions = () => {
+  const [terms, setTerms] = useState([]);
+  const [newTitle, setNewTitle] = useState("");
+  const [newDescription, setNewDescription] = useState("");
   const [editingId, setEditingId] = useState(null);
-  const [editingQuestion, setEditingQuestion] = useState("");
-  const [editingAnswer, setEditingAnswer] = useState("");
+  const [editingTitle, setEditingTitle] = useState("");
+  const [editingDescription, setEditingDescription] = useState("");
   const [isInputVisible, setIsInputVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    const fetchFAQs = async () => {
+    const fetchTerms = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/faqs`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/terms-and-conditions`,
           {
             headers: {
               Authorization: `Bearer ${session?.access_token}`,
@@ -47,8 +40,8 @@ const FAQs = () => {
           }
         );
         const data = await response.json();
-        console.log("Fetched FAQS::", data);
-        setFaqs(data.docs);
+        console.log("Fetched Terms ::", data);
+        setTerms(data.docs);
       } catch (error) {
         toast({
           title: "Error",
@@ -60,11 +53,11 @@ const FAQs = () => {
       }
     };
 
-    fetchFAQs();
+    fetchTerms();
   }, [session?.access_token]);
 
-  const handleAddFAQ = async () => {
-    if (!newQuestion || !newAnswer) {
+  const handleAddTerm = async () => {
+    if (!newTitle || !newDescription) {
       toast({
         title: "Error",
         description: "Please fill in both fields.",
@@ -74,26 +67,26 @@ const FAQs = () => {
     }
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/faqs`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/terms-and-conditions`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session?.access_token}`,
           },
-          body: JSON.stringify({ question: newQuestion, answer: newAnswer }),
+          body: JSON.stringify({ title: newTitle, description: newDescription }),
         }
       );
 
-      if (!response.ok) throw new Error("Failed to add FAQ");
-      const { doc: newFAQ } = await response.json();
-      setFaqs((prevFaqs) => [...prevFaqs, newFAQ]);
-      setNewQuestion("");
-      setNewAnswer("");
+      if (!response.ok) throw new Error("Failed to add term");
+      const { doc: newTerm } = await response.json();
+      setTerms((prevTerms) => [...prevTerms, newTerm]);
+      setNewTitle("");
+      setNewDescription("");
       setIsInputVisible(false);
       toast({
         title: "Success",
-        description: "FAQ added successfully!",
+        description: "Term added successfully!",
         variant: "ourSuccess",
       });
     } catch (error) {
@@ -105,55 +98,55 @@ const FAQs = () => {
     }
   };
 
-  const handleEditFAQ = (id) => {
-    const faqToEdit = faqs.find((faq) => faq.id === id);
-    setEditingQuestion(faqToEdit.question);
-    setEditingAnswer(faqToEdit.answer);
+  const handleEditTerm = (id) => {
+    const termToEdit = terms.find((term) => term.id === id);
+    setEditingTitle(termToEdit.title);
+    setEditingDescription(termToEdit.description);
     setEditingId(id);
-    setIsInputVisible(false); // Hide the add input when editing
+    setIsInputVisible(false);
   };
 
-  const handleUpdateFAQ = async () => {
+  const handleUpdateTerm = async () => {
     if (!editingId) return;
 
     try {
-      const updatedFAQData = {
-        question: editingQuestion.trim(),
-        answer: editingAnswer.trim(),
+      const updatedTermData = {
+        title: editingTitle.trim(),
+        description: editingDescription.trim(),
       };
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/faqs/${editingId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/terms-and-conditions/${editingId}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session?.access_token}`,
           },
-          body: JSON.stringify(updatedFAQData),
+          body: JSON.stringify(updatedTermData),
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update FAQ");
+        throw new Error(errorData.message || "Failed to update term");
       }
 
-      const { doc: updatedFAQ } = await response.json();
+      const { doc: updatedTerm } = await response.json();
 
-      setFaqs((prevFaqs) =>
-        prevFaqs.map((faq) =>
-          faq.id === editingId ? { ...faq, ...updatedFAQ } : faq
+      setTerms((prevTerms) =>
+        prevTerms.map((term) =>
+          term.id === editingId ? { ...term, ...updatedTerm } : term
         )
       );
 
-      setEditingQuestion("");
-      setEditingAnswer("");
+      setEditingTitle("");
+      setEditingDescription("");
       setEditingId(null);
 
       toast({
         title: "Success",
-        description: "FAQ updated successfully!",
+        description: "Term updated successfully!",
         variant: "ourSuccess",
       });
     } catch (error) {
@@ -165,10 +158,10 @@ const FAQs = () => {
     }
   };
 
-  const handleDeleteFAQ = async (id) => {
+  const handleDeleteTerm = async (id) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/faqs/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/terms-and-conditions/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -177,13 +170,13 @@ const FAQs = () => {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to delete FAQ");
+      if (!response.ok) throw new Error("Failed to delete term");
 
-      const updatedFaqs = faqs.filter((faq) => faq.id !== id);
-      setFaqs(updatedFaqs);
+      const updatedTerms = terms.filter((term) => term.id !== id);
+      setTerms(updatedTerms);
       toast({
         title: "Success",
-        description: "FAQ deleted successfully!",
+        description: "Term deleted successfully!",
         variant: "ourSuccess",
       });
     } catch (error) {
@@ -198,10 +191,10 @@ const FAQs = () => {
   const toggleInputVisibility = () => {
     setIsInputVisible(!isInputVisible);
     if (isInputVisible) {
-      setNewQuestion("");
-      setNewAnswer("");
+      setNewTitle("");
+      setNewDescription("");
     }
-    setEditingId(null); // Reset editing state when toggling add input
+    setEditingId(null);
   };
 
   return (
@@ -216,56 +209,46 @@ const FAQs = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/faqs">FAQs</BreadcrumbLink>
+              <BreadcrumbLink href="/terms-and-conditions">
+                Terms & Conditions
+              </BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </header>
 
       <div className="container mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
-        <div className="flex items-center gap-1 mx-auto justify-center">
-          <Badge
-            variant="secondary"
-            className={"flex items-center gap-1 font-medium"}
-          >
-            <CircleHelp className="size-3" />
-            FAQs
-          </Badge>
-        </div>
-        <h1 className="text-xl text-center font-bold my-2">
-          Frequently Asked Questions
-        </h1>
-        <p className="text-sm text-center font-light mb-3 text-gray-600">
-          Find questions and answers related to design system, purchase, updates
-          or support
-        </p>
-        {isLoading ? (
-          <LoadingSkeleton />
-        ) : (
-          <Accordion type="single" collapsible>
-            {faqs?.map((faq) => (
-              <AccordionItem key={faq.id} value={`faq-${faq.id}`}>
-                <AccordionTrigger className="bg-white hover:bg-gray-100 transition duration-200 rounded-md p-3">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="p-4 bg-white border border-gray-200 rounded-md shadow-md">
-                  {editingId === faq.id ? (
+        {/* Header */}
+        <header className="">
+          <h1 className="text-xl font-bold text-center text-gray-800">
+            Terms and Conditions
+          </h1>
+        </header>
+
+        <div className="container mx-auto">
+          <div className="bg-white rounded-lg p-6 flex flex-col gap-2">
+            {isLoading ? (
+              <LoadingSkeleton />
+            ) : terms?.length > 0 ? (
+              terms?.map((term) => (
+                <div key={term.id} className="border-b border-gray-200 pb-4">
+                  {editingId === term.id ? (
                     <div className="space-y-2">
                       <Input
-                        placeholder="Question"
-                        value={editingQuestion}
-                        onChange={(e) => setEditingQuestion(e.target.value)}
+                        placeholder="Title"
+                        value={editingTitle}
+                        onChange={(e) => setEditingTitle(e.target.value)}
                       />
                       <Input
-                        placeholder="Answer"
-                        value={editingAnswer}
-                        onChange={(e) => setEditingAnswer(e.target.value)}
+                        placeholder="Description"
+                        value={editingDescription}
+                        onChange={(e) => setEditingDescription(e.target.value)}
                       />
                       <div className="flex justify-end items-center gap-2">
                         <Button
                           size="xs"
                           className="border border-emerald-400 bg-emerald-100 hover:bg-emerald-100 hover:text-emerald-500 text-emerald-500 text-xs min-w-16"
-                          onClick={handleUpdateFAQ}
+                          onClick={handleUpdateTerm}
                         >
                           Save
                         </Button>
@@ -281,13 +264,20 @@ const FAQs = () => {
                     </div>
                   ) : (
                     <div className="flex justify-between items-center">
-                      <p>{faq.answer}</p>
+                      <div>
+                        <h2 className="text-md font-medium text-gray-800">
+                          {term.title}
+                        </h2>
+                        <p className="text-gray-700 leading-relaxed text-[13px] ml-2">
+                          {term.description}
+                        </p>
+                      </div>
                       <div className="flex space-x-2">
                         <Button
                           variant="ghost"
                           size="xs"
                           className="text-gray-500 hover:text-gray-700"
-                          onClick={() => handleEditFAQ(faq.id)}
+                          onClick={() => handleEditTerm(term.id)}
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
@@ -295,18 +285,20 @@ const FAQs = () => {
                           variant="ghost"
                           size="xs"
                           className="text-gray-500 hover:text-gray-700"
-                          onClick={() => handleDeleteFAQ(faq.id)}
+                          onClick={() => handleDeleteTerm(term.id)}
                         >
                           <Trash className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
                   )}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        )}
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-700">No terms and conditions available.</p>
+            )}
+          </div>
+        </div>
 
         <FloatingActionButton
           onClick={toggleInputVisibility}
@@ -314,34 +306,40 @@ const FAQs = () => {
         />
 
         <div
-          className={`mt-4 transition-all duration-300 ease-in-out ${
+          className={`transition-all duration-300 ease-in-out ${
             isInputVisible
               ? "max-h-screen opacity-100"
               : "max-h-0 opacity-0 overflow-hidden"
           }`}
         >
           <Input
-            placeholder="Question"
-            value={newQuestion}
-            onChange={(e) => setNewQuestion(e.target.value)}
+            placeholder="Title"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
             className="mb-2"
           />
           <Input
-            placeholder="Answer"
-            value={newAnswer}
-            onChange={(e) => setNewAnswer(e.target.value)}
+            placeholder="Description"
+            value={newDescription}
+            onChange={(e) => setNewDescription(e.target.value)}
             className="mb-2"
           />
           <Button
-            onClick={handleAddFAQ}
+            onClick={handleAddTerm}
             className="border border-emerald-400 bg-emerald-100 hover:bg-emerald-100 hover:text-emerald-500 text-emerald-500 text-xs min-w-16"
           >
-            Add FAQ
+            Add Term
           </Button>
         </div>
+
+        <footer className="">
+          <p className="text-center text-gray-600 text-xs">
+            &copy; 2025 FintechHub Limited. All rights reserved.
+          </p>
+        </footer>
       </div>
     </>
   );
 };
 
-export default FAQs;
+export default TermsAndConditions;
