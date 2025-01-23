@@ -161,8 +161,8 @@ export default function AllJobs() {
 
   return (
     <div className="rounded-lg">
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4">
-        <Breadcrumb className="min-w-24 mt-4 sm:mt-0">
+      <header className="flex items-center justify-between gap-2 p-4">
+        <Breadcrumb className="min-w-24">
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/">

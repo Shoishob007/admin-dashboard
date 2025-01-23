@@ -11,7 +11,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { House } from "lucide-react";
-import { OrgFilters } from "../../components/filters/JobFilters";
 import UserTable from "../all-users/components/UserTable";
 import UserSheet from "../all-users/components/UserSheet";
 import { OrgFilterSheet } from "../../components/filters/JobFilterSheet";
@@ -150,8 +149,8 @@ export default function AllOrganizations() {
 
   return (
     <div className="rounded-lg">
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4">
-        <Breadcrumb className="min-w-24 mt-4 sm:mt-0">
+      <header className="flex items-center justify-between gap-2 p-4">
+        <Breadcrumb className="min-w-24">
           <BreadcrumbList>
             <BreadcrumbItem>
               <BreadcrumbLink href="/">
