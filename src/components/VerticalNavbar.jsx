@@ -1,18 +1,9 @@
 /** @format */
 "use client";
 
-import { Bell, Menu, User, X } from "lucide-react";
+import { Bell, User} from "lucide-react";
 import Link from "next/link";
 import { cn } from "../lib/utils";
-// import SearchComponent from "./SearchComponent";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import {
   DropdownMenu,
@@ -23,13 +14,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { Separator } from "@/components/ui/separator";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 const VerticalNavbar = () => {
-  // const handleSearch = (query) => {
-  //   console.log("Searching for:", query);
-  // };
 
   return (
     <nav
