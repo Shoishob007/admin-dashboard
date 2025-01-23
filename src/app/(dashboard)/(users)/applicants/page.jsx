@@ -11,9 +11,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { House } from "lucide-react";
-import { AppFilters } from "../../components/filters/JobFilters";
 import UserTable from "../all-users/components/UserTable";
 import UserSheet from "../all-users/components/UserSheet";
+import { AppFilterSheet } from "../../components/filters/JobFilterSheet";
 
 export default function AllApplicants() {
   const [applicants, setApplicants] = useState([]);
@@ -99,9 +99,7 @@ export default function AllApplicants() {
       }
 
       const data = await response.json();
-      const document = data.docs.find(
-        (doc) => doc.id === user.id
-      );
+      const document = data.docs.find((doc) => doc.id === user.id);
 
       if (!document) {
         console.error("Document not found");
@@ -179,13 +177,14 @@ export default function AllApplicants() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <AppFilters
-            jobs={applicants}
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            jobRoles={getJobRoles()}
-            onReset={handleReset}
-          />
+
+        {/* Filter Button */}
+        <AppFilterSheet
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          jobRoles={getJobRoles()}
+          onReset={handleReset}
+        />
       </header>
 
       <UserTable

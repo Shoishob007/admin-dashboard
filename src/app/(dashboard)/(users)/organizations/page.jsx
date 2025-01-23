@@ -14,6 +14,7 @@ import { House } from "lucide-react";
 import { OrgFilters } from "../../components/filters/JobFilters";
 import UserTable from "../all-users/components/UserTable";
 import UserSheet from "../all-users/components/UserSheet";
+import { OrgFilterSheet } from "../../components/filters/JobFilterSheet";
 
 export default function AllOrganizations() {
   const [organizations, setOrganizations] = useState([]);
@@ -159,11 +160,14 @@ export default function AllOrganizations() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/organizations">All Organizations</BreadcrumbLink>
+              <BreadcrumbLink href="/organizations">
+                All Organizations
+              </BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <OrgFilters
+
+        <OrgFilterSheet
           jobs={organizations}
           filters={filters}
           onFilterChange={handleFilterChange}

@@ -10,19 +10,17 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { House} from "lucide-react";
-import { JobFilters } from "../../components/filters/JobFilters";
+import { House } from "lucide-react";
 import UserTable from "../../(users)/all-users/components/UserTable";
 import JobSheet from "../../(users)/all-users/components/JobSheet";
-
+import { JobFilterSheet } from "../../components/filters/JobFilterSheet";
 
 export default function AllJobs() {
   const [jobs, setJobs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedJobDetails, setSelectedJobDetails] =
-  useState(null);
-const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [selectedJobDetails, setSelectedJobDetails] = useState(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const { data: session, status } = useSession();
   const [filters, setFilters] = useState({
     searchQuery: "",
@@ -82,7 +80,7 @@ const [isSheetOpen, setIsSheetOpen] = useState(false);
     fetchJobs();
   }, [status, session?.access_token]);
 
-  // unique job roles for the filter
+  // Unique job roles for the filter
   const getJobRoles = () => {
     const roles = new Set();
     jobs.forEach((job) => {
@@ -94,7 +92,6 @@ const [isSheetOpen, setIsSheetOpen] = useState(false);
   };
 
   const handleRowClick = async (user) => {
-    console.log(user)
     try {
       const endpoint = "/api/job-details?page=1&limit=5000";
 
@@ -113,10 +110,7 @@ const [isSheetOpen, setIsSheetOpen] = useState(false);
       }
 
       const data = await response.json();
-      console.log("Data ::", data)
       const document = data.docs.find((doc) => doc.id === user.id);
-
-      console.log("document :", document)
 
       if (!document) {
         console.error("Document not found");
@@ -124,8 +118,6 @@ const [isSheetOpen, setIsSheetOpen] = useState(false);
       }
 
       const detailedEndpoint = `/api/job-details/${document.id}`;
-
-      console.log("Detailed Endpoint ::" , detailedEndpoint)
 
       const detailsResponse = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}${detailedEndpoint}`,
@@ -149,7 +141,6 @@ const [isSheetOpen, setIsSheetOpen] = useState(false);
     }
   };
 
-
   if (isLoading) {
     return (
       <div className="space-y-4 p-4">
@@ -168,8 +159,6 @@ const [isSheetOpen, setIsSheetOpen] = useState(false);
     return <div className="p-4 text-red-500">Error loading jobs: {error}</div>;
   }
 
-  console.log("Selected job details :", selectedJobDetails)
-
   return (
     <div className="rounded-lg">
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4">
@@ -186,11 +175,12 @@ const [isSheetOpen, setIsSheetOpen] = useState(false);
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <JobFilters
-          jobs={jobs}
+
+        {/* Filter Button */}
+        <JobFilterSheet
           filters={filters}
           onFilterChange={handleFilterChange}
-          getJobRoles={getJobRoles}
+          jobRoles={getJobRoles()}
           onReset={handleReset}
         />
       </header>

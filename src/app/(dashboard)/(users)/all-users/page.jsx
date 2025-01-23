@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "next-auth/react";
-import { UserFilters } from "../../components/filters/JobFilters";
 import UserTable from "./components/UserTable";
 import UserSheet from "./components/UserSheet";
 import {
@@ -14,6 +13,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { House } from "lucide-react";
+import { UserFilterSheet } from "../../components/filters/JobFilterSheet";
 
 export default function AllUsers() {
   const [users, setUsers] = useState([]);
@@ -96,7 +96,7 @@ export default function AllUsers() {
       }
 
       const data = await response.json();
-      console.log(data)
+      console.log(data);
       const document = data.docs.find(
         (doc) => (doc.organization?.id || doc.applicant?.id) === user.id
       );
@@ -167,7 +167,9 @@ export default function AllUsers() {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <UserFilters
+
+        {/* Filter Button */}
+        <UserFilterSheet
           filters={filters}
           onFilterChange={handleFilterChange}
           onReset={handleReset}
