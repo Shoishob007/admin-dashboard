@@ -17,8 +17,8 @@ import { House, Edit, Trash, CircleHelp } from "lucide-react";
 import LoadingSkeleton from "../faqs/components/LoadingSkeleton";
 import { Badge } from "@/components/ui/badge";
 
-const TermsAndConditions = () => {
-  const [terms, setTerms] = useState([]);
+const PrivacyPolicy = () => {
+  const [policy, setPolicy] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [editingId, setEditingId] = useState(null);
@@ -30,10 +30,10 @@ const TermsAndConditions = () => {
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    const fetchTerms = async () => {
+    const fetchPolicies = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/terms-and-conditions`,
+          `${process.env.NEXT_PUBLIC_API_URL}/api/privacy-policies`,
           {
             headers: {
               Authorization: `Bearer ${session?.access_token}`,
@@ -41,8 +41,8 @@ const TermsAndConditions = () => {
           }
         );
         const data = await response.json();
-        console.log("Fetched Terms ::", data);
-        setTerms(data.docs);
+        console.log("Fetched policies ::", data);
+        setPolicy(data.docs);
       } catch (error) {
         toast({
           title: "Error",
@@ -54,10 +54,10 @@ const TermsAndConditions = () => {
       }
     };
 
-    fetchTerms();
+    fetchPolicies();
   }, [session?.access_token]);
 
-  const handleAddTerm = async () => {
+  const handleAddPolicy = async () => {
     if (!newTitle || !newDescription) {
       toast({
         title: "Error",
@@ -68,26 +68,29 @@ const TermsAndConditions = () => {
     }
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/terms-and-conditions`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/privacy-policies`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session?.access_token}`,
           },
-          body: JSON.stringify({ title: newTitle, description: newDescription }),
+          body: JSON.stringify({
+            title: newTitle,
+            description: newDescription,
+          }),
         }
       );
 
-      if (!response.ok) throw new Error("Failed to add term");
-      const { doc: newTerm } = await response.json();
-      setTerms((prevTerms) => [...prevTerms, newTerm]);
+      if (!response.ok) throw new Error("Failed to add the policy");
+      const { doc: newPolicy } = await response.json();
+      setPolicy((prevPolicy) => [...prevPolicy, newPolicy]);
       setNewTitle("");
       setNewDescription("");
       setIsInputVisible(false);
       toast({
         title: "Success",
-        description: "Term added successfully!",
+        description: "Policy added successfully!",
         variant: "ourSuccess",
       });
     } catch (error) {
@@ -99,45 +102,45 @@ const TermsAndConditions = () => {
     }
   };
 
-  const handleEditTerm = (id) => {
-    const termToEdit = terms.find((term) => term.id === id);
-    setEditingTitle(termToEdit.title);
-    setEditingDescription(termToEdit.description);
+  const handleEditPolicy = (id) => {
+    const policyToEdit = policy.find((policy) => policy.id === id);
+    setEditingTitle(policyToEdit.title);
+    setEditingDescription(policyToEdit.description);
     setEditingId(id);
     setIsInputVisible(false);
   };
 
-  const handleUpdateTerm = async () => {
+  const handleUpdatePolicy = async () => {
     if (!editingId) return;
 
     try {
-      const updatedTermData = {
+      const updatedPolicyData = {
         title: editingTitle.trim(),
         description: editingDescription.trim(),
       };
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/terms-and-conditions/${editingId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/privacy-policies/${editingId}`,
         {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session?.access_token}`,
           },
-          body: JSON.stringify(updatedTermData),
+          body: JSON.stringify(updatedPolicyData),
         }
       );
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update term");
+        throw new Error(errorData.message || "Failed to update policy");
       }
 
-      const { doc: updatedTerm } = await response.json();
+      const { doc: updatedPolicy } = await response.json();
 
-      setTerms((prevTerms) =>
-        prevTerms.map((term) =>
-          term.id === editingId ? { ...term, ...updatedTerm } : term
+      setPolicy((prevPolicy) =>
+        prevPolicy.map((policy) =>
+          policy.id === editingId ? { ...policy, ...updatedPolicy } : policy
         )
       );
 
@@ -147,7 +150,7 @@ const TermsAndConditions = () => {
 
       toast({
         title: "Success",
-        description: "Term updated successfully!",
+        description: "Policy updated successfully!",
         variant: "ourSuccess",
       });
     } catch (error) {
@@ -159,10 +162,10 @@ const TermsAndConditions = () => {
     }
   };
 
-  const handleDeleteTerm = async (id) => {
+  const handleDeletePolicy = async (id) => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/terms-and-conditions/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/privacy-policies/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -171,13 +174,13 @@ const TermsAndConditions = () => {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to delete term");
+      if (!response.ok) throw new Error("Failed to delete the policy");
 
-      const updatedTerms = terms.filter((term) => term.id !== id);
-      setTerms(updatedTerms);
+      const updatedPolicy = policy.filter((policy) => policy.id !== id);
+      setPolicy(updatedPolicy);
       toast({
         title: "Success",
-        description: "Term deleted successfully!",
+        description: "The policy deleted successfully!",
         variant: "ourSuccess",
       });
     } catch (error) {
@@ -210,8 +213,8 @@ const TermsAndConditions = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/terms-and-conditions">
-                Terms & Conditions
+              <BreadcrumbLink href="/privacy-policies">
+                Privacy Policy
               </BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
@@ -221,31 +224,32 @@ const TermsAndConditions = () => {
       <div className="container mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
         {/* Header */}
         <header className="">
-        <div className="flex items-center gap-1 mx-auto justify-center">
-          <Badge
-            variant="secondary"
-            className={"flex items-center gap-1 font-medium"}
-          >
-            <CircleHelp className="size-3" />
-            T&C
-          </Badge>
-        </div>
+          <div className="flex items-center gap-1 mx-auto justify-center">
+            <Badge
+              variant="secondary"
+              className={"flex items-center gap-1 font-medium"}
+            >
+              <CircleHelp className="size-3" />
+              Privacy Policies
+            </Badge>
+          </div>
           <h1 className="text-xl font-bold text-center text-gray-800 my-2">
-            Terms and Conditions
+            Privacy Policies
           </h1>
           <p className="text-sm text-center font-light mb-3 text-gray-600">
-          Add and manage your company terms and conditions as per company policy
-        </p>
+            Add and manage your company privacy policy to incorporate with the
+            terms and conditions
+          </p>
         </header>
 
         <div className="container mx-auto">
           <div className="bg-white rounded-lg p-6 flex flex-col gap-2">
             {isLoading ? (
               <LoadingSkeleton />
-            ) : terms?.length > 0 ? (
-              terms?.map((term) => (
-                <div key={term.id} className="border-b border-gray-200 pb-4">
-                  {editingId === term.id ? (
+            ) : policy?.length > 0 ? (
+              policy?.map((policy) => (
+                <div key={policy.id} className="border-b border-gray-200 pb-4">
+                  {editingId === policy.id ? (
                     <div className="space-y-2">
                       <Input
                         placeholder="Title"
@@ -263,7 +267,7 @@ const TermsAndConditions = () => {
                         <Button
                           size="xs"
                           className="border border-emerald-400 bg-emerald-100 hover:bg-emerald-100 hover:text-emerald-500 text-emerald-500 text-xs min-w-16"
-                          onClick={handleUpdateTerm}
+                          onClick={handleUpdatePolicy}
                         >
                           Save
                         </Button>
@@ -281,10 +285,10 @@ const TermsAndConditions = () => {
                     <div className="flex justify-between items-center">
                       <div>
                         <h2 className="text-md font-medium text-gray-800">
-                          {term.title}
+                          {policy.title}
                         </h2>
                         <p className="text-gray-700 leading-relaxed text-[13px] ml-2">
-                          {term.description}
+                          {policy.description}
                         </p>
                       </div>
                       <div className="flex space-x-2">
@@ -292,7 +296,7 @@ const TermsAndConditions = () => {
                           variant="ghost"
                           size="xs"
                           className="text-gray-500 hover:text-gray-700"
-                          onClick={() => handleEditTerm(term.id)}
+                          onClick={() => handleEditPolicy(policy.id)}
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
@@ -300,7 +304,7 @@ const TermsAndConditions = () => {
                           variant="ghost"
                           size="xs"
                           className="text-gray-500 hover:text-gray-700"
-                          onClick={() => handleDeleteTerm(term.id)}
+                          onClick={() => handleDeletePolicy(policy.id)}
                         >
                           <Trash className="w-4 h-4" />
                         </Button>
@@ -310,7 +314,7 @@ const TermsAndConditions = () => {
                 </div>
               ))
             ) : (
-              <p className="text-gray-700">No terms and conditions available.</p>
+              <p className="text-gray-700">No data about privacy policies.</p>
             )}
           </div>
         </div>
@@ -318,7 +322,7 @@ const TermsAndConditions = () => {
         <FloatingActionButton
           onClick={toggleInputVisibility}
           isInputVisible={isInputVisible}
-          func= "Add T&C"
+          func="Add Privacy Policy"
         />
 
         <div
@@ -341,10 +345,10 @@ const TermsAndConditions = () => {
             className="mb-2 placeholder:text-sm"
           />
           <Button
-            onClick={handleAddTerm}
+            onClick={handleAddPolicy}
             className="border border-emerald-400 bg-emerald-100 hover:bg-emerald-100 hover:text-emerald-500 text-emerald-500 text-xs min-w-16"
           >
-            Add Term
+            Add Policy
           </Button>
         </div>
 
@@ -358,4 +362,4 @@ const TermsAndConditions = () => {
   );
 };
 
-export default TermsAndConditions;
+export default PrivacyPolicy;

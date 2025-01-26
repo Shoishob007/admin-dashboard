@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const FloatingActionButton = ({ onClick, isInputVisible }) => {
+const FloatingActionButton = ({ onClick, isInputVisible, func }) => {
   return (
     <>
       <TooltipProvider>
@@ -17,16 +17,18 @@ const FloatingActionButton = ({ onClick, isInputVisible }) => {
               onClick={onClick}
               className={`fixed bottom-6 right-6 bg-blue-500 text-white rounded-full size-12 shadow-lg hover:bg-blue-600 transition duration-300 flex items-center justify-center ${
                 isInputVisible ? "animate-rotate-in" : "animate-rotate-out"
-              } `}
-              aria-label="Add FAQ"
+              }`}
+              aria-label="Add Doc"
             >
               <span className="text-2xl transition-transform duration-300">
-              {isInputVisible ? "×" : "+"}
-            </span>
+                {isInputVisible ? "×" : "+"}
+              </span>
             </Button>
           </TooltipTrigger>
-          <TooltipContent>
-            <p>{isInputVisible ? "Close" : "Add FAQs"}</p>
+          <TooltipContent
+            className={`${func == "Add Privacy Policy" ? "mr-2" : ""}`}
+          >
+            <p>{isInputVisible ? "Close" : `${func}`}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

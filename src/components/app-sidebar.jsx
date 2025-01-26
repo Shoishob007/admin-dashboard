@@ -152,6 +152,11 @@ const data = {
       icon: FileText
     },
     {
+      title:"Privacy Policy",
+      url:"/privacy-policies",
+      icon: FileText
+    },
+    {
       title: "Settings",
       url: "#",
       icon: Settings2,

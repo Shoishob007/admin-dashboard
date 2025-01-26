@@ -255,11 +255,13 @@ const FAQs = () => {
                         placeholder="Question"
                         value={editingQuestion}
                         onChange={(e) => setEditingQuestion(e.target.value)}
+                        className="placeholder:text-sm"
                       />
                       <Input
                         placeholder="Answer"
                         value={editingAnswer}
                         onChange={(e) => setEditingAnswer(e.target.value)}
+                        className="placeholder:text-sm"
                       />
                       <div className="flex justify-end items-center gap-2">
                         <Button
@@ -311,6 +313,8 @@ const FAQs = () => {
         <FloatingActionButton
           onClick={toggleInputVisibility}
           isInputVisible={isInputVisible}
+          func= "Add FAQs"
+
         />
 
         <div
@@ -324,13 +328,13 @@ const FAQs = () => {
             placeholder="Question"
             value={newQuestion}
             onChange={(e) => setNewQuestion(e.target.value)}
-            className="mb-2"
+            className="mb-2 placeholder:text-sm"
           />
           <Input
             placeholder="Answer"
             value={newAnswer}
             onChange={(e) => setNewAnswer(e.target.value)}
-            className="mb-2"
+            className="mb-2 placeholder:text-sm"
           />
           <Button
             onClick={handleAddFAQ}
