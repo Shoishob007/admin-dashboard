@@ -16,6 +16,7 @@ import FloatingActionButton from "@/components/ui/floatingButton";
 import { House, Edit, Trash, CircleHelp } from "lucide-react";
 import LoadingSkeleton from "../faqs/components/LoadingSkeleton";
 import { Badge } from "@/components/ui/badge";
+import RichTextEditor from "../components/RichTextEditor";
 
 const PrivacyPolicy = () => {
   const [policy, setPolicy] = useState([]);
@@ -24,7 +25,7 @@ const PrivacyPolicy = () => {
   const [editingId, setEditingId] = useState(null);
   const [editingTitle, setEditingTitle] = useState("");
   const [editingDescription, setEditingDescription] = useState("");
-  const [isInputVisible, setIsInputVisible] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { data: session, status } = useSession();
@@ -87,7 +88,7 @@ const PrivacyPolicy = () => {
       setPolicy((prevPolicy) => [...prevPolicy, newPolicy]);
       setNewTitle("");
       setNewDescription("");
-      setIsInputVisible(false);
+      setIsDialogOpen(false);
       toast({
         title: "Success",
         description: "Policy added successfully!",
@@ -107,7 +108,6 @@ const PrivacyPolicy = () => {
     setEditingTitle(policyToEdit.title);
     setEditingDescription(policyToEdit.description);
     setEditingId(id);
-    setIsInputVisible(false);
   };
 
   const handleUpdatePolicy = async () => {
@@ -192,15 +192,6 @@ const PrivacyPolicy = () => {
     }
   };
 
-  const toggleInputVisibility = () => {
-    setIsInputVisible(!isInputVisible);
-    if (isInputVisible) {
-      setNewTitle("");
-      setNewDescription("");
-    }
-    setEditingId(null);
-  };
-
   return (
     <>
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4">
@@ -222,7 +213,6 @@ const PrivacyPolicy = () => {
       </header>
 
       <div className="container mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
-        {/* Header */}
         <header className="">
           <div className="flex items-center gap-1 mx-auto justify-center">
             <Badge
@@ -257,11 +247,9 @@ const PrivacyPolicy = () => {
                         onChange={(e) => setEditingTitle(e.target.value)}
                         className="placeholder:text-sm"
                       />
-                      <Input
-                        placeholder="Description"
+                      <RichTextEditor
                         value={editingDescription}
-                        onChange={(e) => setEditingDescription(e.target.value)}
-                        className="placeholder:text-sm"
+                        onChange={setEditingDescription}
                       />
                       <div className="flex justify-end items-center gap-2">
                         <Button
@@ -287,9 +275,12 @@ const PrivacyPolicy = () => {
                         <h2 className="text-md font-medium text-gray-800">
                           {policy.title}
                         </h2>
-                        <p className="text-gray-700 leading-relaxed text-[13px] ml-2">
-                          {policy.description}
-                        </p>
+                        <div
+                          className="prose text-gray-700 leading-relaxed text-[13px] ml-2"
+                          dangerouslySetInnerHTML={{
+                            __html: policy.description,
+                          }}
+                        />
                       </div>
                       <div className="flex space-x-2">
                         <Button
@@ -320,37 +311,15 @@ const PrivacyPolicy = () => {
         </div>
 
         <FloatingActionButton
-          onClick={toggleInputVisibility}
-          isInputVisible={isInputVisible}
-          func="Add Privacy Policy"
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          func="Add Policies"
+          handleAdd={handleAddPolicy}
+          newQuestion={newTitle}
+          setNewQuestion={setNewTitle}
+          newAnswer={newDescription}
+          setNewAnswer={setNewDescription}
         />
-
-        <div
-          className={`transition-all duration-300 ease-in-out ${
-            isInputVisible
-              ? "max-h-screen opacity-100"
-              : "max-h-0 opacity-0 overflow-hidden"
-          }`}
-        >
-          <Input
-            placeholder="Title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            className="mb-2 placeholder:text-sm"
-          />
-          <Input
-            placeholder="Description"
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-            className="mb-2 placeholder:text-sm"
-          />
-          <Button
-            onClick={handleAddPolicy}
-            className="border border-emerald-400 bg-emerald-100 hover:bg-emerald-100 hover:text-emerald-500 text-emerald-500 text-xs min-w-16"
-          >
-            Add Policy
-          </Button>
-        </div>
 
         <footer className="">
           <p className="text-center text-gray-600 text-xs">

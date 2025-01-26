@@ -18,10 +18,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import FloatingActionButton from "@/components/ui/floatingButton";
-import { CircleHelp, House, Edit, Trash } from "lucide-react"; // Import icons
+import { CircleHelp, House, Edit, Trash } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Badge } from "@/components/ui/badge";
 import LoadingSkeleton from "./components/LoadingSkeleton";
+import RichTextEditor from "../components/RichTextEditor";
 
 const FAQs = () => {
   const [faqs, setFaqs] = useState([]);
@@ -30,7 +31,7 @@ const FAQs = () => {
   const [editingId, setEditingId] = useState(null);
   const [editingQuestion, setEditingQuestion] = useState("");
   const [editingAnswer, setEditingAnswer] = useState("");
-  const [isInputVisible, setIsInputVisible] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { data: session, status } = useSession();
@@ -90,7 +91,7 @@ const FAQs = () => {
       setFaqs((prevFaqs) => [...prevFaqs, newFAQ]);
       setNewQuestion("");
       setNewAnswer("");
-      setIsInputVisible(false);
+      setIsDialogOpen(false);
       toast({
         title: "Success",
         description: "FAQ added successfully!",
@@ -110,7 +111,6 @@ const FAQs = () => {
     setEditingQuestion(faqToEdit.question);
     setEditingAnswer(faqToEdit.answer);
     setEditingId(id);
-    setIsInputVisible(false); // Hide the add input when editing
   };
 
   const handleUpdateFAQ = async () => {
@@ -195,15 +195,6 @@ const FAQs = () => {
     }
   };
 
-  const toggleInputVisibility = () => {
-    setIsInputVisible(!isInputVisible);
-    if (isInputVisible) {
-      setNewQuestion("");
-      setNewAnswer("");
-    }
-    setEditingId(null); // Reset editing state when toggling add input
-  };
-
   return (
     <>
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-4">
@@ -257,11 +248,9 @@ const FAQs = () => {
                         onChange={(e) => setEditingQuestion(e.target.value)}
                         className="placeholder:text-sm"
                       />
-                      <Input
-                        placeholder="Answer"
+                      <RichTextEditor
                         value={editingAnswer}
-                        onChange={(e) => setEditingAnswer(e.target.value)}
-                        className="placeholder:text-sm"
+                        onChange={setEditingAnswer}
                       />
                       <div className="flex justify-end items-center gap-2">
                         <Button
@@ -283,7 +272,10 @@ const FAQs = () => {
                     </div>
                   ) : (
                     <div className="flex justify-between items-center">
-                      <p>{faq.answer}</p>
+                      <div
+                        className="prose"
+                        dangerouslySetInnerHTML={{ __html: faq.answer }}
+                      />
                       <div className="flex space-x-2">
                         <Button
                           variant="ghost"
@@ -311,38 +303,15 @@ const FAQs = () => {
         )}
 
         <FloatingActionButton
-          onClick={toggleInputVisibility}
-          isInputVisible={isInputVisible}
-          func= "Add FAQs"
-
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          func="Add FAQs"
+          handleAdd={handleAddFAQ}
+          newQuestion={newQuestion}
+          setNewQuestion={setNewQuestion}
+          newAnswer={newAnswer}
+          setNewAnswer={setNewAnswer}
         />
-
-        <div
-          className={`mt-4 transition-all duration-300 ease-in-out ${
-            isInputVisible
-              ? "max-h-screen opacity-100"
-              : "max-h-0 opacity-0 overflow-hidden"
-          }`}
-        >
-          <Input
-            placeholder="Question"
-            value={newQuestion}
-            onChange={(e) => setNewQuestion(e.target.value)}
-            className="mb-2 placeholder:text-sm"
-          />
-          <Input
-            placeholder="Answer"
-            value={newAnswer}
-            onChange={(e) => setNewAnswer(e.target.value)}
-            className="mb-2 placeholder:text-sm"
-          />
-          <Button
-            onClick={handleAddFAQ}
-            className="border border-emerald-400 bg-emerald-100 hover:bg-emerald-100 hover:text-emerald-500 text-emerald-500 text-xs min-w-16"
-          >
-            Add FAQ
-          </Button>
-        </div>
       </div>
     </>
   );

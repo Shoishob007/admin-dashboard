@@ -1,7 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -16,6 +15,8 @@ import FloatingActionButton from "@/components/ui/floatingButton";
 import { House, Edit, Trash, CircleHelp } from "lucide-react";
 import LoadingSkeleton from "../faqs/components/LoadingSkeleton";
 import { Badge } from "@/components/ui/badge";
+import { useSession } from "next-auth/react";
+import RichTextEditor from "../components/RichTextEditor";
 
 const TermsAndConditions = () => {
   const [terms, setTerms] = useState([]);
@@ -24,7 +25,7 @@ const TermsAndConditions = () => {
   const [editingId, setEditingId] = useState(null);
   const [editingTitle, setEditingTitle] = useState("");
   const [editingDescription, setEditingDescription] = useState("");
-  const [isInputVisible, setIsInputVisible] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const { data: session, status } = useSession();
@@ -41,7 +42,7 @@ const TermsAndConditions = () => {
           }
         );
         const data = await response.json();
-        console.log("Fetched Terms ::", data);
+        console.log("Fetched terms ::", data);
         setTerms(data.docs);
       } catch (error) {
         toast({
@@ -75,16 +76,19 @@ const TermsAndConditions = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session?.access_token}`,
           },
-          body: JSON.stringify({ title: newTitle, description: newDescription }),
+          body: JSON.stringify({
+            title: newTitle,
+            description: newDescription,
+          }),
         }
       );
 
-      if (!response.ok) throw new Error("Failed to add term");
+      if (!response.ok) throw new Error("Failed to add the term");
       const { doc: newTerm } = await response.json();
       setTerms((prevTerms) => [...prevTerms, newTerm]);
       setNewTitle("");
       setNewDescription("");
-      setIsInputVisible(false);
+      setIsDialogOpen(false);
       toast({
         title: "Success",
         description: "Term added successfully!",
@@ -104,7 +108,6 @@ const TermsAndConditions = () => {
     setEditingTitle(termToEdit.title);
     setEditingDescription(termToEdit.description);
     setEditingId(id);
-    setIsInputVisible(false);
   };
 
   const handleUpdateTerm = async () => {
@@ -171,13 +174,13 @@ const TermsAndConditions = () => {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to delete term");
+      if (!response.ok) throw new Error("Failed to delete the term");
 
       const updatedTerms = terms.filter((term) => term.id !== id);
       setTerms(updatedTerms);
       toast({
         title: "Success",
-        description: "Term deleted successfully!",
+        description: "The term deleted successfully!",
         variant: "ourSuccess",
       });
     } catch (error) {
@@ -187,15 +190,6 @@ const TermsAndConditions = () => {
         variant: "ourDestructive",
       });
     }
-  };
-
-  const toggleInputVisibility = () => {
-    setIsInputVisible(!isInputVisible);
-    if (isInputVisible) {
-      setNewTitle("");
-      setNewDescription("");
-    }
-    setEditingId(null);
   };
 
   return (
@@ -211,7 +205,7 @@ const TermsAndConditions = () => {
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbLink href="/terms-and-conditions">
-                Terms & Conditions
+                Terms and Conditions
               </BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
@@ -221,21 +215,21 @@ const TermsAndConditions = () => {
       <div className="container mx-auto p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
         {/* Header */}
         <header className="">
-        <div className="flex items-center gap-1 mx-auto justify-center">
-          <Badge
-            variant="secondary"
-            className={"flex items-center gap-1 font-medium"}
-          >
-            <CircleHelp className="size-3" />
-            T&C
-          </Badge>
-        </div>
+          <div className="flex items-center gap-1 mx-auto justify-center">
+            <Badge
+              variant="secondary"
+              className={"flex items-center gap-1 font-medium"}
+            >
+              <CircleHelp className="size-3" />
+              Terms and Conditions
+            </Badge>
+          </div>
           <h1 className="text-xl font-bold text-center text-gray-800 my-2">
             Terms and Conditions
           </h1>
           <p className="text-sm text-center font-light mb-3 text-gray-600">
-          Add and manage your company terms and conditions as per company policy
-        </p>
+            Add and manage your company terms and conditions
+          </p>
         </header>
 
         <div className="container mx-auto">
@@ -253,11 +247,9 @@ const TermsAndConditions = () => {
                         onChange={(e) => setEditingTitle(e.target.value)}
                         className="placeholder:text-sm"
                       />
-                      <Input
-                        placeholder="Description"
+                      <RichTextEditor
                         value={editingDescription}
-                        onChange={(e) => setEditingDescription(e.target.value)}
-                        className="placeholder:text-sm"
+                        onChange={setEditingDescription}
                       />
                       <div className="flex justify-end items-center gap-2">
                         <Button
@@ -283,9 +275,10 @@ const TermsAndConditions = () => {
                         <h2 className="text-md font-medium text-gray-800">
                           {term.title}
                         </h2>
-                        <p className="text-gray-700 leading-relaxed text-[13px] ml-2">
-                          {term.description}
-                        </p>
+                        <div
+                          className="prose text-gray-700 leading-relaxed text-[13px] ml-2"
+                          dangerouslySetInnerHTML={{ __html: term.description }}
+                        />
                       </div>
                       <div className="flex space-x-2">
                         <Button
@@ -310,43 +303,23 @@ const TermsAndConditions = () => {
                 </div>
               ))
             ) : (
-              <p className="text-gray-700">No terms and conditions available.</p>
+              <p className="text-gray-700">
+                No data about terms and conditions.
+              </p>
             )}
           </div>
         </div>
 
         <FloatingActionButton
-          onClick={toggleInputVisibility}
-          isInputVisible={isInputVisible}
-          func= "Add T&C"
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          func="Add Terms"
+          handleAdd={handleAddTerm}
+          newQuestion={newTitle}
+          setNewQuestion={setNewTitle}
+          newAnswer={newDescription}
+          setNewAnswer={setNewDescription}
         />
-
-        <div
-          className={`transition-all duration-300 ease-in-out ${
-            isInputVisible
-              ? "max-h-screen opacity-100"
-              : "max-h-0 opacity-0 overflow-hidden"
-          }`}
-        >
-          <Input
-            placeholder="Title"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            className="mb-2 placeholder:text-sm"
-          />
-          <Input
-            placeholder="Description"
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
-            className="mb-2 placeholder:text-sm"
-          />
-          <Button
-            onClick={handleAddTerm}
-            className="border border-emerald-400 bg-emerald-100 hover:bg-emerald-100 hover:text-emerald-500 text-emerald-500 text-xs min-w-16"
-          >
-            Add Term
-          </Button>
-        </div>
 
         <footer className="">
           <p className="text-center text-gray-600 text-xs">
