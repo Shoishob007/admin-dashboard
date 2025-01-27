@@ -107,35 +107,35 @@ export function DashColumnChart() {
   const data = [
     {
       id: "m5gr84i9",
-      amount: 316,
+      amount: 33016,
       status: "success",
       name: "Ken",
       email: "ken99@yahoo.com",
     },
     {
       id: "3u1reuv4",
-      amount: 242,
+      amount: 22420,
       status: "success",
       name: "Abdul Halim",
       email: "Abe45@gmail.com",
     },
     {
       id: "derv1ws0",
-      amount: 837,
+      amount: 18372,
       status: "processing",
       name: "Monserrat",
       email: "Monserrat44@gmail.com",
     },
     {
       id: "5kma53ae",
-      amount: 874,
+      amount: 87471,
       status: "success",
       name: "Silas",
       email: "Silas22@gmail.com",
     },
     {
       id: "bhqecj4p",
-      amount: 721,
+      amount: 33721,
       status: "failed",
       name: "Carmella",
       email: "carmella@hotmail.com",
@@ -189,7 +189,7 @@ export function DashColumnChart() {
         ticks: { autoSkip: false, maxRotation: 45, minRotation: 45 },
       },
       y: {
-        title: { display: true, text: "Amount ($)" },
+        title: { display: true, text: "Amount (BDT)" },
         beginAtZero: true,
       },
     },
@@ -207,15 +207,14 @@ export function DashColumnChart() {
       <h2 className="text-lg font-semibold mb-4 text-gray-600 text-center">
         Transaction Amount by User
       </h2>
-
-      {/* Category Filters */}
-      <div className="flex justify-center space-x-2 mb-4">
+  
+      <div className="flex justify-center lg:space-x-1 space-x-2 mb-4">
         {["success", "processing", "failed"].map((category) => (
           <Button
             key={category}
             onClick={() => handleCategoryToggle(category)}
             variant="outline"
-            className={`flex items-center space-x-1 px-2 py-1 border-none hover:bg-transparent shadow-none ${
+            className={`flex items-center space-x-1 px-2 lg:px-1 py-1 border-none hover:bg-transparent shadow-none ${
               selectedCategories[category]
                 ? "text-gray-700"
                 : "text-gray-400 line-through"
@@ -236,9 +235,11 @@ export function DashColumnChart() {
           </Button>
         ))}
       </div>
-
+  
       {/* Chart */}
-      <Bar data={columnChartData} options={options} />
+      <div className="">
+        <Bar data={columnChartData} options={options} className="mx-auto items-center h-[450px] lg:h-[250px] " />
+      </div>
     </div>
-  );
+  )
 }

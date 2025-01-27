@@ -15,6 +15,7 @@ import {
   MessageCircleQuestion,
   PieChart,
   Settings2,
+  ShieldQuestion,
   SquareTerminal,
   User,
   Users,
@@ -154,7 +155,7 @@ const data = {
     {
       title:"Privacy Policy",
       url:"/privacy-policies",
-      icon: FileText
+      icon: ShieldQuestion
     },
     {
       title: "Settings",

@@ -77,14 +77,14 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid grid-cols-1 sm:grid-cols-2">
+      <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid grid-cols-1 lg:grid-cols-2">
         <div className=" rounded-lg h-fit">
           <h2 className="text-lg font-semibold mb-2 text-gray-600 text-center">
             Sales by Employees
           </h2>
           <DashTable data={data} />
         </div>
-        <div className="h-fit">
+        <div className="">
           <DashColumnChart />
         </div>
       </div>

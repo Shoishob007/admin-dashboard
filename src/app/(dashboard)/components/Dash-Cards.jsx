@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FileUser, UserRoundCog, UserRoundPlus, Users2 } from "lucide-react";
+import CountUp from "react-countup";
 
 const DashCards = () => {
   const getStyle = (value) => ({
@@ -19,7 +20,7 @@ const DashCards = () => {
             <CardHeader>
               <CardTitle className="text-gray-600 text-sm lg:text-base">Total Users</CardTitle>
               <CardDescription className="text-gray-600 text-2xl">
-                3,088
+                <CountUp start={0} end={388} duration={2} delay={1} />
               </CardDescription>
             </CardHeader>
           </div>
@@ -33,7 +34,7 @@ const DashCards = () => {
             <CardHeader>
               <CardTitle className="text-gray-600 text-sm lg:text-base">Total Applicants</CardTitle>
               <CardDescription className="text-gray-600 text-2xl">
-                2,998
+              <CountUp start={0} end={2471} duration={2} delay={1} />
               </CardDescription>
             </CardHeader>
           </div>
@@ -49,7 +50,7 @@ const DashCards = () => {
                 Total Organizations
               </CardTitle>
               <CardDescription className="text-gray-600 text-2xl">
-                90
+              <CountUp start={0} end={90} duration={2} delay={1} />
               </CardDescription>
             </CardHeader>
           </div>
@@ -63,7 +64,7 @@ const DashCards = () => {
             <CardHeader>
               <CardTitle className="text-gray-600 text-sm lg:text-base">New Members</CardTitle>
               <CardDescription className="text-gray-600 text-2xl">
-                354
+              <CountUp start={0} end={324} duration={2} delay={1} />
               </CardDescription>
             </CardHeader>
           </div>
