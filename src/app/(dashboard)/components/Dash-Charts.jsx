@@ -21,7 +21,7 @@ export function DashBarChart() {
   return (
     <>
       <div className="max-w-full md:col-span-2">
-        <h2 className="text-lg font-semibold mb-2 text-gray-600">
+        <h2 className="text-lg font-semibold mb-2 text-gray-600 text-center">
           Product Sales
         </h2>
         <Bar data={barChartData} />
@@ -48,17 +48,28 @@ export function DashDoughnutChart() {
   };
 
   return (
-    <>
-      <div
-        className="bg-white rounded-lg max-w-[350px] text-center items-center mx-auto"
-        style={{ alignContent: "center" }}
-      >
-        <h2 className="text-lg font-semibold text-gray-600 text-center">
-          Sales by Product Category
-        </h2>
-        <Doughnut data={doughnutChartData} style={{ padding: "2rem" }} />
+    <div className="w-full max-w-[400px]">
+      <h2 className="text-lg font-semibold text-gray-600 text-center mb-4">
+        Sales by Product Category
+      </h2>
+      <div className="aspect-square">
+        <Doughnut
+          data={doughnutChartData}
+          options={{
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: {
+                  padding: 15
+                }
+              }
+            }
+          }}
+        />
       </div>
-    </>
+    </div>
   );
 }
 
@@ -105,6 +116,41 @@ export function DashLineChart() {
 
 export function DashColumnChart() {
   const data = [
+    {
+      id: "m5gr84i9",
+      amount: 33016,
+      status: "success",
+      name: "Ken",
+      email: "ken99@yahoo.com",
+    },
+    {
+      id: "3u1reuv4",
+      amount: 22420,
+      status: "success",
+      name: "Abdul Halim",
+      email: "Abe45@gmail.com",
+    },
+    {
+      id: "derv1ws0",
+      amount: 18372,
+      status: "processing",
+      name: "Monserrat",
+      email: "Monserrat44@gmail.com",
+    },
+    {
+      id: "5kma53ae",
+      amount: 87471,
+      status: "success",
+      name: "Silas",
+      email: "Silas22@gmail.com",
+    },
+    {
+      id: "bhqecj4p",
+      amount: 33721,
+      status: "failed",
+      name: "Carmella",
+      email: "carmella@hotmail.com",
+    },
     {
       id: "m5gr84i9",
       amount: 33016,
@@ -238,7 +284,7 @@ export function DashColumnChart() {
   
       {/* Chart */}
       <div className="">
-        <Bar data={columnChartData} options={options} className="mx-auto items-center h-[450px] lg:h-[250px] " />
+        <Bar data={columnChartData} options={options} className="items-center h-[450px] lg:h-[250px] flex justify-center" />
       </div>
     </div>
   )

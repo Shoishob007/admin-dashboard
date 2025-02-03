@@ -56,7 +56,9 @@ export default function Dashboard() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/"><House className="w-4 h-4" /></BreadcrumbLink>
+              <BreadcrumbLink href="/">
+                <House className="w-4 h-4" />
+              </BreadcrumbLink>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -66,9 +68,13 @@ export default function Dashboard() {
         <DashCards />
       </div>
 
-      <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid items-center gap-4 md:gap-0 grid-cols-1 md:grid-cols-3">
-        <DashBarChart />
-        <DashDoughnutChart className="max-w-[350px] max-h-[350px]"/>
+      <div className="mt-8 max-w-full bg-white p-6 rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="w-full md:col-span-2">
+          <DashBarChart />
+        </div>
+        <div className="w-full flex justify-center items-center md:col-span-1">
+          <DashDoughnutChart />
+        </div>
       </div>
 
       <div className="mt-8 bg-white p-6 rounded-lg shadow-lg grid grid-cols-1">
