@@ -32,10 +32,10 @@ export function DashBarChart() {
 
 export function DashDoughnutChart() {
   const doughnutChartData = {
-    labels: ["Living Room", "Bedroom", "Kitchen", "Office", "Kids"],
+    labels: ["Enterprize", "Fintech", "SAAS Application", "AI", "Industry Specific"],
     datasets: [
       {
-        data: [25, 20, 15, 25, 15],
+        data: [20, 35, 15, 20, 10],
         backgroundColor: [
           "#4ADE80",
           "#60A5FA",
@@ -48,8 +48,8 @@ export function DashDoughnutChart() {
   };
 
   return (
-    <div className="w-full max-w-[400px]">
-      <h2 className="text-lg font-semibold text-gray-600 text-center mb-4">
+    <div className="w-full md:max-w-[400px]">
+      <h2 className="text-lg font-semibold text-gray-600 text-center mb-2">
         Sales by Product Category
       </h2>
       <div className="aspect-square">
@@ -61,8 +61,12 @@ export function DashDoughnutChart() {
             plugins: {
               legend: {
                 position: 'top',
+                  
                 labels: {
-                  padding: 15
+                  padding: 10,
+                  font: {
+                    size: 10,
+                  },
                 }
               }
             }

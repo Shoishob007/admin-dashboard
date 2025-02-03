@@ -68,11 +68,11 @@ export default function Dashboard() {
         <DashCards />
       </div>
 
-      <div className="mt-8 max-w-full bg-white p-6 rounded-lg shadow-lg grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="w-full md:col-span-2">
+      <div className="mt-8 max-w-full bg-white p-6 rounded-lg shadow-lg grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-2">
+        <div className="w-full sm:col-span-2">
           <DashBarChart />
         </div>
-        <div className="w-full flex justify-center items-center md:col-span-1">
+        <div className="w-full flex justify-center items-center sm:col-span-1">
           <DashDoughnutChart />
         </div>
       </div>

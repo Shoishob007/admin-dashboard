@@ -3,21 +3,15 @@
 import * as React from "react"
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   BriefcaseBusiness,
   Command,
   FileText,
-  Frame,
   GalleryVerticalEnd,
   Info,
-  Map,
   MessageCircleQuestion,
-  PieChart,
   Settings2,
   ShieldQuestion,
   SquareTerminal,
-  User,
   Users,
 } from "lucide-react"
 
@@ -36,8 +30,8 @@ import {
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "HireHub",
+    email: "hirehub.com",
     // avatar: "/avatars/shadcn.jpg",
   },
   teams: [

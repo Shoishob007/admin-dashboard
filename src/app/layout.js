@@ -11,7 +11,6 @@ import { usePathname } from "next/navigation";
 export default function RootLayout({ children, session }) {
   const pathname = usePathname();
 
-  // Define authentication routes
   const isAuthRoute = [
     "/login",
     "/register",
